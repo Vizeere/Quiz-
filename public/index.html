@@ -76,6 +76,17 @@
   .why-box { display: none; font-size: 0.85rem; color: #c8c0b0; line-height: 1.65; background: #1e1e1e; border: 1px solid #2a2a2a; border-left: 2px solid #b8860b; border-radius: 2px; padding: 14px 16px; margin-bottom: 16px; white-space: pre-wrap; }
   .why-box.show { display: block; }
   .why-box.muted { color: #666; font-style: italic; }
+  .mk-screen { display: none; }
+  .mk-screen.show { display: block; }
+  .mk-summary { font-size: 0.8rem; color: #777; line-height: 1.6; margin-bottom: 28px; }
+  .mk-section { margin-bottom: 28px; }
+  .mk-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid #1f1f1f; font-size: 0.85rem; color: #aaa; }
+  .mk-row .n { color: #b8860b; white-space: nowrap; }
+  .mk-row .de { color: #e8e0d0; }
+  .mk-row .typed { color: #c07070; text-decoration: line-through; text-decoration-color: #6b3a3a; }
+  .mk-empty { font-size: 0.8rem; color: #555; font-style: italic; padding: 8px 0; }
+  .btn-clear { background: transparent; border: 1px solid #2a2a2a; color: #555; font-size: 0.72rem; padding: 8px 14px; }
+  .btn-clear:hover { color: #c07070; border-color: #6b3a3a; }
   .sr-info { font-size: 0.6rem; color: #3a3a3a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
 </style>
 </head>
@@ -87,6 +98,7 @@
     <div class="subtitle">Choose a category</div>
     <div id="cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
     <button class="btn-again" onclick="startAll()" style="width:100%;padding:14px;">All Categories (Mixed)</button>
+    <button class="btn-more" onclick="showMistakes()" style="width:100%;padding:12px;margin-top:10px;" id="mk-home-btn">My mistakes</button>
   </div>
 
   <div id="quiz" style="display:none;">
@@ -122,6 +134,22 @@
       <button class="btn-why" id="bwhy" onclick="askWhy()">Why? Ask Claude</button>
       <button class="btn-skip" onclick="skip()">Skip</button>
       <button class="btn-skip" onclick="goHome()">← Categories</button>
+    </div>
+  </div>
+
+  <div class="mk-screen" id="mistakes">
+    <h1>My mistakes</h1>
+    <div class="subtitle">What you get wrong most often</div>
+    <div class="mk-summary" id="mk-summary"></div>
+    <div id="mk-body"></div>
+    <div class="mk-section">
+      <div class="bd-hdr">Ask Claude</div>
+      <div class="why-box" id="mk-ai" aria-live="polite"></div>
+      <button class="btn-why" id="mk-ai-btn" onclick="analyseMistakes()" style="display:inline-block;">Analyse my patterns with Claude</button>
+    </div>
+    <div class="end-btns">
+      <button class="btn-again" onclick="goHome()">← Categories</button>
+      <button class="btn-clear" onclick="clearMistakes()">Clear mistake log</button>
     </div>
   </div>
 
@@ -661,6 +689,7 @@ function checkAnswer() {
   document.getElementById('ans').className='answer-box show';
 
   lastTyped=typed;
+  if(result!=='exact') logMistake(q, typed, result);
   document.getElementById('bwhy').style.display = result==='exact' ? 'none' : 'inline-block';
   if(result==='exact'||result==='close') {
     inp.className='type-input ok';
@@ -676,6 +705,171 @@ function checkAnswer() {
     document.getElementById('bmis').style.display='inline-block';
     lastCorrect=false;
   }
+}
+
+// ---- Mistake log -------------------------------------------------------
+// Every answer that isn't exactly right is saved on this device, so the
+// "My mistakes" screen can show which words and patterns trip you up most.
+const MK_KEY = 'deutsch_caleb_mistakes_v1';
+const MK_MAX = 1000;
+
+function loadMistakes() {
+  try { return JSON.parse(localStorage.getItem(MK_KEY)) || []; } catch(e) { return []; }
+}
+function logMistake(q, typed, kind) {
+  const log = loadMistakes();
+  log.push({t: Date.now(), en: q.en, cat: q.cat, de: q.de, typed, kind});
+  try { localStorage.setItem(MK_KEY, JSON.stringify(log.slice(-MK_MAX))); } catch(e){}
+}
+function clearMistakes() {
+  if(!confirm('Clear your mistake log? Your quiz progress is kept.')) return;
+  try { localStorage.removeItem(MK_KEY); } catch(e){}
+  showMistakes();
+}
+
+function words(s) {
+  return s.toLowerCase().replace(/[.,!?;:"()…–—]/g,' ').split(/\s+/).filter(Boolean);
+}
+
+// Word-level diff of what you typed against the expected answer.
+// Returns null when the answer is too far off to say anything word-specific.
+function wordDiff(typed, expected) {
+  const a = words(typed), b = words(expected);
+  const m = a.length, n = b.length;
+  const L = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+  for (let i = m-1; i >= 0; i--) for (let j = n-1; j >= 0; j--)
+    L[i][j] = a[i] === b[j] ? L[i+1][j+1] + 1 : Math.max(L[i+1][j], L[i][j+1]);
+  if (n === 0 || L[0][0] < n / 2) return null;
+
+  // Walk the LCS, grouping the non-matching stretches into hunks.
+  const hunks = []; let h = {extra: [], missed: []};
+  let i = 0, j = 0;
+  const flush = () => { if (h.extra.length || h.missed.length) hunks.push(h); h = {extra: [], missed: []}; };
+  while (i < m || j < n) {
+    if (i < m && j < n && a[i] === b[j]) { flush(); i++; j++; }
+    else if (j < n && (i >= m || L[i][j+1] >= L[i+1][j])) h.missed.push(b[j++]);
+    else h.extra.push(a[i++]);
+  }
+  flush();
+
+  // A word both missing in one place and extra in another = right word, wrong place.
+  const allMissed = hunks.flatMap(x => x.missed), allExtra = hunks.flatMap(x => x.extra);
+  const order = [];
+  for (const w of allMissed) {
+    const k = allExtra.indexOf(w);
+    if (k >= 0) { allExtra.splice(k, 1); order.push(w); }
+  }
+  const out = {swaps: [], missed: [], extra: [], order};
+  const orderLeft = [...order], orderLeft2 = [...order];
+  for (const x of hunks) {
+    const missed = x.missed.filter(w => { const k = orderLeft.indexOf(w); if (k >= 0) { orderLeft.splice(k, 1); return false; } return true; });
+    const extra = x.extra.filter(w => { const k = orderLeft2.indexOf(w); if (k >= 0) { orderLeft2.splice(k, 1); return false; } return true; });
+    const pairs = Math.min(missed.length, extra.length);
+    for (let k = 0; k < pairs; k++) out.swaps.push([extra[k], missed[k]]);
+    out.missed.push(...missed.slice(pairs));
+    out.extra.push(...extra.slice(pairs));
+  }
+  return out;
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function topN(counts, n) {
+  return Object.entries(counts).sort((x, y) => y[1] - x[1]).slice(0, n);
+}
+function mkSection(title, rows, empty) {
+  return `<div class="mk-section"><div class="bd-hdr">${title}</div>` +
+    (rows.length ? rows.join('') : `<div class="mk-empty">${empty}</div>`) + `</div>`;
+}
+
+function showMistakes() {
+  document.getElementById('cat-select').style.display = 'none';
+  document.getElementById('mistakes').className = 'mk-screen show';
+  const log = loadMistakes();
+  const summary = document.getElementById('mk-summary');
+  const body = document.getElementById('mk-body');
+  document.getElementById('mk-ai').className = 'why-box';
+  document.getElementById('mk-ai-btn').style.display = log.length ? 'inline-block' : 'none';
+
+  if (!log.length) {
+    summary.textContent = "No mistakes logged yet. Every answer that isn't exactly right gets saved here (on this device) so you can see your patterns.";
+    body.innerHTML = '';
+    return;
+  }
+  const days = Math.max(1, Math.round((Date.now() - log[0].t) / 86400000));
+  summary.textContent = `${log.length} mistake${log.length === 1 ? '' : 's'} logged over ${days} day${days === 1 ? '' : 's'}` +
+    ` (${log.filter(x => x.kind === 'close').length} were close).`;
+
+  const swaps = {}, missed = {}, extra = {}, order = {}, sentences = {}, cats = {};
+  for (const x of log) {
+    sentences[x.en] = (sentences[x.en] || 0) + 1;
+    cats[x.cat] = (cats[x.cat] || 0) + 1;
+    const d = wordDiff(x.typed, x.de);
+    if (!d) continue;
+    for (const [w, r] of d.swaps) { const k = w + '\u0000' + r; swaps[k] = (swaps[k] || 0) + 1; }
+    for (const w of d.missed) missed[w] = (missed[w] || 0) + 1;
+    for (const w of d.extra) extra[w] = (extra[w] || 0) + 1;
+    for (const w of d.order) order[w] = (order[w] || 0) + 1;
+  }
+  const n = c => `<span class="n">${c}×</span>`;
+  const deOf = en => (ALL.find(q => q.en === en) || {}).de || '';
+
+  body.innerHTML =
+    mkSection('Words you mix up',
+      topN(swaps, 10).map(([k, c]) => { const [w, r] = k.split('\u0000');
+        return `<div class="mk-row"><span><span class="typed">${esc(w)}</span> → <span class="de">${esc(r)}</span></span>${n(c)}</div>`; }),
+      'Nothing yet — this shows words you type in place of the right one (e.g. den → dem).') +
+    mkSection('Words you leave out',
+      topN(missed, 8).map(([w, c]) => `<div class="mk-row"><span class="de">${esc(w)}</span>${n(c)}</div>`),
+      'Nothing yet.') +
+    mkSection('Words you add that shouldn’t be there',
+      topN(extra, 8).map(([w, c]) => `<div class="mk-row"><span class="typed">${esc(w)}</span>${n(c)}</div>`),
+      'Nothing yet.') +
+    mkSection('Right word, wrong place (word order)',
+      topN(order, 8).map(([w, c]) => `<div class="mk-row"><span class="de">${esc(w)}</span>${n(c)}</div>`),
+      'Nothing yet.') +
+    mkSection('Categories',
+      topN(cats, 12).map(([cat, c]) => `<div class="mk-row"><span>${esc(cat)}</span>${n(c)}</div>`),
+      '') +
+    mkSection('Sentences you miss most',
+      topN(sentences, 6).map(([en, c]) => `<div class="mk-row"><span>${esc(en)}<br><span class="de">${esc(deOf(en))}</span></span>${n(c)}</div>`),
+      '');
+}
+
+let mkReq = 0;
+async function analyseMistakes() {
+  const btn = document.getElementById('mk-ai-btn');
+  const box = document.getElementById('mk-ai');
+  const req = ++mkReq;
+  btn.disabled = true;
+  box.className = 'why-box show muted';
+  box.textContent = 'Claude is looking through your mistakes…';
+  const recent = loadMistakes().slice(-80).map(x => ({english: x.en, expected: x.de, typed: x.typed}));
+  let msg, ok = false;
+  try {
+    const res = await fetch('/api/patterns', {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({mistakes: recent})
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.explanation) { msg = data.explanation; ok = true; }
+    else msg = aiErrorMessage(data.error);
+  } catch(e) {
+    msg = "Couldn't reach Claude — are you online?";
+  }
+  if (req !== mkReq) return;
+  box.className = 'why-box show' + (ok ? '' : ' muted');
+  box.textContent = msg;
+  btn.disabled = false;
+}
+
+function aiErrorMessage(code) {
+  if (code === 'not_configured') return "Ask Claude isn't set up yet — add an ANTHROPIC_API_KEY secret to the quiz worker in Cloudflare.";
+  if (code === 'bad_key') return "Claude rejected the API key — check the ANTHROPIC_API_KEY secret in Cloudflare.";
+  if (code === 'rate_limited') return "Too many questions at once — try again in a moment.";
+  return "Couldn't get an answer right now. Try again in a moment.";
 }
 
 // "Why? Ask Claude" — the worker at /api/explain asks Claude to explain the mistake.
@@ -697,10 +891,7 @@ async function askWhy() {
     });
     const data=await res.json().catch(()=>({}));
     if(res.ok && data.explanation) { msg=data.explanation; ok=true; }
-    else if(data.error==='not_configured') msg="Ask Claude isn't set up yet — add an ANTHROPIC_API_KEY secret to the quiz worker in Cloudflare.";
-    else if(data.error==='bad_key') msg="Claude rejected the API key — check the ANTHROPIC_API_KEY secret in Cloudflare.";
-    else if(data.error==='rate_limited') msg="Too many questions at once — try again in a moment.";
-    else msg="Couldn't get an explanation right now. Try again in a moment.";
+    else msg=aiErrorMessage(data.error);
   } catch(e) {
     msg="Couldn't reach Claude — are you online?";
   }
@@ -790,6 +981,7 @@ let activeCat = null; // null = all
 function goHome() {
   activeCat = null;
   document.getElementById('scores').className = 'score-screen';
+  document.getElementById('mistakes').className = 'mk-screen';
   document.getElementById('quiz').style.display = 'none';
   document.getElementById('cat-select').style.display = 'block';
   buildCatList();
