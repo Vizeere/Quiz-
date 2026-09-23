@@ -1,7 +1,7 @@
 {
   // German quiz — static page, no build step.
   // Cloudflare Workers Builds: build command empty, deploy command `npx wrangler deploy`.
-  "name": "german-quiz",
+  "name": "quiz",
   "compatibility_date": "2026-08-01",
   "assets": {
     "directory": "./public"
