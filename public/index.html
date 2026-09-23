@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deutsch</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a1a;
+    color: #e8e0d0;
+    font-family: 'Georgia', serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+  }
+  .container { width: 100%; max-width: 580px; }
+  h1 { font-size: 1rem; letter-spacing: 0.2em; text-transform: uppercase; color: #b8860b; margin-bottom: 4px; font-weight: normal; }
+  .subtitle { font-size: 0.7rem; color: #555; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 36px; }
+  .progress-bar { height: 2px; background: #222; margin-bottom: 36px; border-radius: 1px; }
+  .progress-fill { height: 100%; background: #b8860b; border-radius: 1px; transition: width 0.5s ease; }
+  .meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .q-counter { font-size: 0.65rem; letter-spacing: 0.15em; color: #444; text-transform: uppercase; }
+  .category-tag { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #b8860b; }
+  .english { font-size: 1.45rem; line-height: 1.5; color: #e8e0d0; margin-bottom: 36px; min-height: 56px; }
+  .think-label { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: #3a3a3a; margin-bottom: 20px; }
+  .answer-box { background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 2px; padding: 20px; margin-bottom: 16px; display: none; }
+  .answer-box.show { display: block; }
+  .german { font-size: 1.15rem; color: #e8e0d0; margin-bottom: 12px; line-height: 1.5; }
+  .note { font-size: 0.78rem; color: #666; line-height: 1.65; border-top: 1px solid #252525; padding-top: 12px; }
+  .note strong { color: #b8860b; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  button { font-family: 'Georgia', serif; font-size: 0.8rem; letter-spacing: 0.08em; cursor: pointer; border-radius: 2px; padding: 11px 20px; transition: all 0.15s; }
+  .btn-reveal { background: transparent; border: 1px solid #333; color: #666; }
+  .btn-reveal:hover { border-color: #b8860b; color: #b8860b; }
+  .btn-reveal.hide { display: none; }
+  .btn-got { background: #1f2e20; border: 1px solid #3a6b3e; color: #6ec074; display: none; }
+  .btn-got:hover { background: #263828; }
+  .btn-got.show { display: inline-block; }
+  .btn-miss { background: #2e1f1f; border: 1px solid #6b3a3a; color: #c07070; display: none; }
+  .btn-miss:hover { background: #382626; }
+  .btn-miss.show { display: inline-block; }
+  .score-screen { display: none; }
+  .score-screen.show { display: block; }
+  .score-big { font-size: 3.5rem; color: #b8860b; line-height: 1; margin: 16px 0 4px; }
+  .score-sub { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: #555; margin-bottom: 24px; }
+  .weak-note { font-size: 0.78rem; color: #5a5a5a; font-style: italic; margin-bottom: 24px; line-height: 1.6; padding: 14px; background: #1c1c1c; border-left: 2px solid #2a2a2a; }
+  .breakdown { margin-bottom: 28px; }
+  .bd-hdr { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: #444; margin-bottom: 10px; }
+  .bd-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1f1f1f; font-size: 0.8rem; color: #666; }
+  .bd-row span:last-child { color: #b8860b; }
+  .end-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-more { background: transparent; border: 1px solid #b8860b; color: #b8860b; }
+  .btn-more:hover { background: #b8860b; color: #1a1a1a; }
+  .btn-again { background: #b8860b; border: none; color: #1a1a1a; }
+  .btn-again:hover { background: #c99a14; }
+  .umlaut-bar { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .umlaut-btn { background: #222; border: 1px solid #2a2a2a; color: #777; padding: 5px 10px; font-size: 0.9rem; cursor: pointer; border-radius: 2px; font-family: 'Georgia', serif; letter-spacing: 0; transition: all 0.15s; }
+  .umlaut-btn:hover { border-color: #b8860b; color: #b8860b; }
+  .type-input { width: 100%; background: #1e1e1e; border: 1px solid #2a2a2a; color: #e8e0d0; font-family: 'Georgia', serif; font-size: 1.05rem; padding: 14px 16px; border-radius: 2px; outline: none; transition: border-color 0.2s; margin-bottom: 8px; }
+  .type-input:focus { border-color: #3a3a3a; }
+  .type-input.ok { border-color: #3a6b3e; background: #1a2e1c; }
+  .type-input.no { border-color: #6b3a3a; background: #2a1a1a; }
+  .check-fb { font-size: 0.78rem; line-height: 1.5; color: #555; min-height: 18px; margin-bottom: 14px; }
+  .check-fb.ok { color: #6ec074; }
+  .check-fb.no { color: #c07070; }
+  .btn-check { background: #1e1e1e; border: 1px solid #333; color: #777; }
+  .btn-check:hover { border-color: #b8860b; color: #b8860b; }
+  .btn-skip { background: transparent; border: 1px solid #1e1e1e; color: #3a3a3a; font-size: 0.72rem; padding: 8px 14px; }
+  .btn-skip:hover { color: #555; border-color: #2a2a2a; }
+  .sr-info { font-size: 0.6rem; color: #3a3a3a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="cat-select" style="display:block;">
+    <h1>Deutsch</h1>
+    <div class="subtitle">Choose a category</div>
+    <div id="cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
+    <button class="btn-again" onclick="startAll()" style="width:100%;padding:14px;">All Categories (Mixed)</button>
+  </div>
+
+  <div id="quiz" style="display:none;">
+    <h1>Deutsch</h1>
+    <div class="subtitle" id="quiz-subtitle">B1 · Hamburg</div>
+    <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+    <div class="meta">
+      <div class="q-counter" id="ctr"></div>
+      <div class="category-tag" id="cat"></div>
+    </div>
+    <div class="english" id="en"></div>
+    <div class="sr-info" id="srinfo"></div>
+    <div class="umlaut-bar">
+      <button class="umlaut-btn" onclick="ins('ä')">ä</button>
+      <button class="umlaut-btn" onclick="ins('ö')">ö</button>
+      <button class="umlaut-btn" onclick="ins('ü')">ü</button>
+      <button class="umlaut-btn" onclick="ins('Ä')">Ä</button>
+      <button class="umlaut-btn" onclick="ins('Ö')">Ö</button>
+      <button class="umlaut-btn" onclick="ins('Ü')">Ü</button>
+      <button class="umlaut-btn" onclick="ins('ß')">ß</button>
+    </div>
+    <input class="type-input" id="tinput" type="text" placeholder="Type in German…" autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="handleKey(event)">
+    <div class="check-fb" id="cfb"></div>
+    <div class="answer-box" id="ans">
+      <div class="german" id="de"></div>
+      <div class="note" id="note"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-check" id="bcheck" onclick="checkAnswer()">Check ↵</button>
+      <button class="btn-got" id="bgot" onclick="mark(true)">Got it ✓</button>
+      <button class="btn-miss" id="bmis" onclick="mark(false)">Try again ↺</button>
+      <button class="btn-skip" onclick="skip()">Skip</button>
+      <button class="btn-skip" onclick="goHome()">← Categories</button>
+    </div>
+  </div>
+
+  <div class="score-screen" id="scores">
+    <h1>Fertig</h1>
+    <div class="score-big" id="snum"></div>
+    <div class="score-sub">correct</div>
+    <div class="weak-note" id="wnote"></div>
+    <div class="breakdown" id="bdown"></div>
+    <div class="end-btns">
+      <button class="btn-more" onclick="nextRound()">More →</button>
+      <button class="btn-again" onclick="goHome()">Categories</button>
+    </div>
+  </div>
+
+</div>
+<script>
+const ALL = [
+
+  // ── WAR / WURDE / WÜRDE ─────────────────────────────────────
+  {cat:"war/wurde/würde",en:"He got sick.",de:"Er wurde krank.",note:"<strong>Wurde</strong> = got/became. War = was already in that state."},
+  {cat:"war/wurde/würde",en:"It was cold.",de:"Es war kalt.",note:"<strong>War</strong> = simple past 'was'. Es wurde kalt = it got cold (a change happening)."},
+  {cat:"war/wurde/würde",en:"I wouldn't do that.",de:"Ich würde das nicht machen.",note:"<strong>Würde</strong> = would. Always for conditionals and hypotheticals."},
+  {cat:"war/wurde/würde",en:"He was invited.",de:"Er wurde eingeladen.",note:"Passive uses <strong>wurde</strong>. Think of it as 'he got invited'."},
+  {cat:"war/wurde/würde",en:"It got dark.",de:"Es wurde dunkel.",note:"<strong>Wurde</strong> = got/became. A change happening, not a state."},
+  {cat:"war/wurde/würde",en:"That would make sense.",de:"Das würde Sinn machen.",note:"<strong>Würde</strong> for any 'would' — conditional."},
+  {cat:"war/wurde/würde",en:"She got rejected.",de:"Sie wurde abgewiesen.",note:"<strong>Abgewiesen</strong> = rejected/turned away. Passive with wurde."},
+  {cat:"war/wurde/würde",en:"The quote was expensive.",de:"Das Angebot war teuer.",note:"<strong>War</strong> = was (simple fact, not passive, not conditional)."},
+
+  // ── WORD ORDER — SUBORDINATE CLAUSES ────────────────────────
+  {cat:"Word Order",en:"I still don't know where my headphones are.",de:"Ich weiß immer noch nicht, wo meine Kopfhörer sind.",note:"After <strong>wo</strong>, verb goes to end: wo meine Kopfhörer <strong>sind</strong>."},
+  {cat:"Word Order",en:"Last time you were here you forgot to pay.",de:"Letztes Mal als du hier warst, hast du vergessen zu bezahlen.",note:"After <strong>als</strong>, verb to end of that clause. New clause resets: hast du."},
+  {cat:"Word Order",en:"Before I go, I need to pay.",de:"Bevor ich gehe, muss ich bezahlen.",note:"After <strong>bevor</strong>, verb to end: bevor ich <strong>gehe</strong>."},
+  {cat:"Word Order",en:"Maybe another table will become free.",de:"Vielleicht wird noch ein Tisch frei.",note:"<strong>Vielleicht</strong> at the start = verb must be second: wird."},
+  {cat:"Word Order",en:"I also need to help Loretta with flying.",de:"Ich muss auch Loretta beim Fliegen unterstützen.",note:"Modal verb = full <strong>infinitive</strong> at end. Never 'unterstütz'."},
+  {cat:"Word Order",en:"If I had to guess, 20% of people order that.",de:"Wenn ich schätzen müsste, bestellen das 20% der Leute.",note:"Wenn clause: verb to end. New clause resets with verb second."},
+  {cat:"Word Order",en:"I don't know if he's coming.",de:"Ich weiß nicht ob er kommt.",note:"After <strong>ob</strong> (if/whether), verb goes to end."},
+  {cat:"Word Order",en:"I'm going home because I'm tired.",de:"Ich geh nach Hause weil ich müde bin.",note:"After <strong>weil</strong>, verb to end: weil ich müde <strong>bin</strong>."},
+  {cat:"Word Order",en:"I'll do it when I have time.",de:"Ich mach es wenn ich Zeit habe.",note:"After <strong>wenn</strong>, verb to end: wenn ich Zeit <strong>habe</strong>."},
+  {cat:"Word Order",en:"Do you know where the toilet is?",de:"Weißt du wo die Toilette ist?",note:"After <strong>wo</strong>, verb to end. Classic indirect question."},
+  {cat:"Word Order",en:"He said he'd be here at 8.",de:"Er hat gesagt er kommt um 8.",note:"Casual German often drops dass. Verb still goes to end of that clause."},
+  {cat:"Word Order",en:"When did you notice that?",de:"Wann ist dir das aufgefallen?",note:"<strong>Auffallen</strong> uses sein (ist), not haben. Dative: ist <strong>dir</strong> das aufgefallen."},
+
+  // ── SEPARABLE VERBS ──────────────────────────────────────────
+  {cat:"Separable Verbs",en:"The glass fell down.",de:"Das Glas ist runtergefallen.",note:"<strong>Runterfallen</strong> uses sein, not haben. Past: ist runtergefallen."},
+  {cat:"Separable Verbs",en:"I need to call him back.",de:"Ich muss ihn zurückrufen.",note:"Modal + separable = stays together as one infinitive: <strong>zurückrufen</strong>."},
+  {cat:"Separable Verbs",en:"I introduced myself.",de:"Ich habe mich vorgestellt.",note:"<strong>Sich vorstellen</strong> — mich because subject and object are the same person."},
+  {cat:"Separable Verbs",en:"He didn't show up.",de:"Er ist nicht aufgetaucht.",note:"<strong>Auftauchen</strong> = to show up. Uses sein. Nicht before the participle."},
+  {cat:"Separable Verbs",en:"I picked it up yesterday.",de:"Ich hab es gestern abgeholt.",note:"<strong>Abholen</strong> = pick up/collect. Participle: abgeholt (stays together)."},
+  {cat:"Separable Verbs",en:"She turned him down.",de:"Sie hat ihn abgewiesen.",note:"<strong>Abweisen</strong> = to reject/turn away. Hat abgewiesen — uses haben."},
+  {cat:"Separable Verbs",en:"I need to wipe down the tables.",de:"Ich muss die Tische abwischen.",note:"<strong>Abwischen</strong> = wipe down. Stays together as infinitive after muss."},
+
+  // ── REFLEXIVE VERBS ──────────────────────────────────────────
+  {cat:"Reflexive Verbs",en:"I'm looking forward to it.",de:"Ich freue mich darauf.",note:"<strong>Sich freuen auf</strong> = to look forward to. Darauf = da+auf (on/to that)."},
+  {cat:"Reflexive Verbs",en:"I'm worried about it.",de:"Ich mache mir Sorgen darum.",note:"<strong>Sich Sorgen machen</strong> = to worry. Mir = dative reflexive here."},
+  {cat:"Reflexive Verbs",en:"We argued over it.",de:"Wir haben uns darum gestritten.",note:"<strong>Sich streiten um</strong> = to argue over. Uns = reflexive plural."},
+  {cat:"Reflexive Verbs",en:"It feels weird.",de:"Es fühlt sich komisch an.",note:"<strong>Sich anfühlen</strong> = to feel (sensation). Separable + reflexive: fühlt sich...an."},
+  {cat:"Reflexive Verbs",en:"I can imagine that.",de:"Das kann ich mir vorstellen.",note:"Mir (dative) not mich here — 'I can picture that to myself'."},
+  {cat:"Reflexive Verbs",en:"Make yourself at home.",de:"Fühl dich wie zu Hause.",note:"<strong>Sich fühlen</strong> = to feel. Imperative: fühl dich. Wie zu Hause = like at home."},
+  {cat:"Reflexive Verbs",en:"I'll be in touch.",de:"Ich melde mich.",note:"Reflexive — must be 'mich' not 'dich'. Ich melde dich = I'm reporting you."},
+  {cat:"Reflexive Verbs",en:"I'm not looking after myself.",de:"Ich kümmere mich nicht um mich.",note:"<strong>Sich kümmern um</strong> = to look after. Double sich/mich is correct here."},
+
+  // ── NICHT MEHR / NOCH NICHT ──────────────────────────────────
+  {cat:"Tricky Words",en:"I don't live there anymore.",de:"Ich wohne da nicht mehr.",note:"<strong>Nicht mehr</strong> = not anymore. Goes after verb and object."},
+  {cat:"Tricky Words",en:"He hasn't arrived yet.",de:"Er ist noch nicht angekommen.",note:"<strong>Noch nicht</strong> = not yet. Past participle goes to the end."},
+  {cat:"Tricky Words",en:"We've run out of beer.",de:"Wir haben kein Bier mehr.",note:"<strong>Kein... mehr</strong> = none left. Kein agrees with noun: kein Bier, keine Cola."},
+  {cat:"Tricky Words",en:"She's not here yet.",de:"Sie ist noch nicht da.",note:"<strong>Noch nicht</strong> = not yet. Da = here (casual short form)."},
+  {cat:"Tricky Words",en:"I still haven't heard back from him.",de:"Ich hab noch nichts von ihm gehört.",note:"<strong>Noch nichts</strong> = nothing yet. Von ihm = from him."},
+
+  // ── TRICKY WORDS ─────────────────────────────────────────────
+  {cat:"Tricky Words",en:"Apart from that, everything was fine.",de:"Ansonsten war alles gut.",note:"<strong>Ansonsten</strong> = apart from that / otherwise."},
+  {cat:"Tricky Words",en:"What do you want instead?",de:"Was willst du stattdessen?",note:"<strong>Stattdessen</strong> = instead of that. Not sogar (even) or sonst (otherwise)."},
+  {cat:"Tricky Words",en:"Even he laughed.",de:"Sogar er hat gelacht.",note:"<strong>Sogar</strong> = even (surprising inclusion)."},
+  {cat:"Tricky Words",en:"I can't come, the thing is I have to work.",de:"Ich kann nicht kommen, ich muss nämlich arbeiten.",note:"<strong>Nämlich</strong> = you see / the thing is. Goes after the verb."},
+  {cat:"Tricky Words",en:"I'd never done that before.",de:"Das hatte ich zuvor nie gemacht.",note:"<strong>Zuvor</strong> = previously. Different from bevor (which connects clauses)."},
+  {cat:"Tricky Words",en:"It depends.",de:"Kommt drauf an.",note:"Short for 'es kommt darauf an'. Darauf → drauf in casual speech."},
+  {cat:"Tricky Words",en:"I'll deal with that.",de:"Ich kümmere mich drum.",note:"Drum = darum (casual). <strong>Sich kümmern um</strong> = to take care of/deal with."},
+  {cat:"Tricky Words",en:"I haven't been looking after it.",de:"Hab mich da nicht drum gekümmert.",note:"Drop the 'ich' — very natural spoken German. Da = there/that."},
+  {cat:"Tricky Words",en:"Apparently I need a signature.",de:"Ich brauche anscheinend eine Unterschrift.",note:"<strong>Anscheinend</strong> = apparently (new info, slight surprise)."},
+
+  // ── DATIVE TRAPS ─────────────────────────────────────────────
+  {cat:"Grammar",en:"I'm going to the bank.",de:"Ich geh zur Bank.",note:"<strong>Zur</strong> = zu + der. Bank is feminine (die Bank), so zu der → zur."},
+  {cat:"Grammar",en:"I'm going to the supermarket.",de:"Ich geh zum Supermarkt.",note:"<strong>Zum</strong> = zu + dem. Supermarkt is masculine (der Supermarkt)."},
+  {cat:"Grammar",en:"Can you help me with it?",de:"Kannst du mir dabei helfen?",note:"<strong>Helfen</strong> takes dative: mir (not mich). Dabei = with it/that."},
+  {cat:"Grammar",en:"Tell him I said hi.",de:"Sag ihm, ich lass grüßen.",note:"<strong>Sagen</strong> takes dative for the person: sag <strong>ihm</strong>. Ich lass grüßen = casual 'send my regards'."},
+  {cat:"Grammar",en:"I got it from him.",de:"Ich hab es von ihm bekommen.",note:"<strong>Von</strong> takes dative: von ihm (not ihn)."},
+
+  // ── PASSIVE ──────────────────────────────────────────────────
+  {cat:"Grammar",en:"It's being fixed right now.",de:"Es wird gerade repariert.",note:"Present passive: <strong>wird</strong> + past participle at end. Gerade = right now."},
+  {cat:"Grammar",en:"It was done yesterday.",de:"Es wurde gestern gemacht.",note:"Past passive: <strong>wurde</strong> + past participle."},
+  {cat:"Grammar",en:"The shift needs to be covered.",de:"Die Schicht muss abgedeckt werden.",note:"Passive with modal: muss + past participle + <strong>werden</strong> at end."},
+  {cat:"Grammar",en:"On Thursday my wisdom teeth are being taken out.",de:"Am Donnerstag werden mir die Weisheitszähne gezogen.",note:"Passive + dative: <strong>werden mir gezogen</strong> = are being pulled for me."},
+
+  // ── PUB PHRASES ──────────────────────────────────────────────
+  {cat:"Pub German",en:"We've just run out of potatoes, sorry.",de:"Wir haben leider gerade keine Kartoffeln mehr, tut uns leid.",note:"<strong>Keine... mehr</strong> = none left. Leider softens it."},
+  {cat:"Pub German",en:"I'd like that table there.",de:"Ich hätte gerne den Tisch da.",note:"<strong>Ich hätte gerne</strong> is the most natural polite request in a bar."},
+  {cat:"Pub German",en:"How many people will you guys be?",de:"Wie viele seid ihr?",note:"Short and natural. No need to overcomplicate it."},
+  {cat:"Pub German",en:"It would be best if you reserved a table.",de:"Am besten reserviert ihr einen Tisch.",note:"<strong>Am besten</strong> = best thing to do. Casual advice."},
+  {cat:"Pub German",en:"We're doing last round, want another drink?",de:"Wir machen letzte Runde, noch was zu trinken?",note:"Drop the formal möchten — <strong>noch was zu trinken?</strong> is natural."},
+  {cat:"Pub German",en:"The tables need to be cleaned first.",de:"Die Tische müssen erst abgewischt werden.",note:"<strong>Abwischen</strong> = wipe down. More natural than 'sauber machen' for tables."},
+  {cat:"Pub German",en:"I need to do the till.",de:"Ich muss die Kasse machen.",note:"<strong>Kasse</strong> = till/cash register. Standard pub word."},
+  {cat:"Pub German",en:"Tell him he can do the shift himself.",de:"Sag ihm, er kann die Schicht selbst machen.",note:"<strong>Selbst</strong> = himself/yourself. Adds the 'on his own' emphasis."},
+  {cat:"Pub German",en:"Your table hasn't paid yet, do they know that?",de:"Euer Tisch hat noch nicht bezahlt, wissen die das?",note:"<strong>Euer Tisch</strong> = your table (group). More natural than 'die Leute von deinem Tisch'."},
+  {cat:"Pub German",en:"Is it made in house or pre-packaged?",de:"Ist das hausgemacht oder abgepackt?",note:"<strong>Hausgemacht</strong> = homemade/in-house. <strong>Abgepackt</strong> = pre-packaged."},
+  {cat:"Pub German",en:"Do you guys need water or anything?",de:"Braucht ihr Wasser oder sowas?",note:"<strong>Sowas</strong> = so etwas = something like that. Very casual."},
+  {cat:"Pub German",en:"I can't make it tonight, I'm doing a closing shift.",de:"Ich schaff es heute Abend nicht, ich hab Spätschicht.",note:"<strong>Es schaffen</strong> = to manage/make it. Spätschicht = late/closing shift."},
+
+  // ── HAMBURG LIFE ─────────────────────────────────────────────
+  {cat:"Hamburg Life",en:"The U-Bahn was completely packed.",de:"Die U-Bahn war brechend voll.",note:"<strong>Brechend voll</strong> = absolutely packed. Very Hamburg."},
+  {cat:"Hamburg Life",en:"It's raining again, typical Hamburg.",de:"Es regnet schon wieder, typisch Hamburg.",note:"<strong>Schon wieder</strong> = already again. Perfect for Hamburg weather."},
+  {cat:"Hamburg Life",en:"I did a run along the Alster this morning.",de:"Ich bin heute Morgen an der Alster laufen gegangen.",note:"<strong>Laufen gehen</strong> = to go for a run. An der Alster = along the Alster (dative)."},
+  {cat:"Hamburg Life",en:"The shift last night was absolute chaos.",de:"Die Schicht gestern Abend war das reinste Chaos.",note:"<strong>Das reinste Chaos</strong> = absolute chaos. Reinste adds emphasis."},
+  {cat:"Hamburg Life",en:"Things are really kicking off at the pub tonight.",de:"Es geht heute Abend so richtig ab in der Kneipe.",note:"<strong>So richtig abgehen</strong> = really kick off. Richtig adds emphasis."},
+  {cat:"Hamburg Life",en:"I've been here for two years now.",de:"Ich bin jetzt seit zwei Jahren hier.",note:"<strong>Seit</strong> + dative for ongoing duration. Seit zwei Jahren = for two years (still going)."},
+  {cat:"Hamburg Life",en:"My mate moved here from New Zealand.",de:"Mein Kumpel ist aus Neuseeland hierher gezogen.",note:"<strong>Hierher ziehen</strong> = to move here (motion towards). Uses sein."},
+  {cat:"Hamburg Life",en:"It's freezing outside.",de:"Es ist sau kalt draußen.",note:"<strong>Sau</strong> = very/bloody (casual intensifier). Saukalt, sauvoll, saugut — very Hamburg."},
+
+  // ── HEALTH / REAL SITUATIONS ─────────────────────────────────
+  {cat:"Real Situations",en:"I think three have to come out.",de:"Ich glaube drei müssen raus.",note:"Drop the noun — everyone knows you mean teeth. <strong>Raus müssen</strong> = have to come out."},
+  {cat:"Real Situations",en:"It's all covered by my insurance, right?",de:"Das übernimmt doch meine Versicherung, oder?",note:"<strong>Übernehmen</strong> = to cover. Doch softens and implies 'surely'."},
+  {cat:"Real Situations",en:"Morning, I had my wisdom teeth out a few days ago and I've been in a lot of pain so I wanted to check everything was ok.",de:"Guten Morgen, ich hab mir vor ein paar Tagen die Weisheitszähne ziehen lassen und hatte seitdem starke Schmerzen, deshalb wollte ich nachschauen ob alles in Ordnung ist.",note:"<strong>Ziehen lassen</strong> = to have pulled (causative). Seitdem = since then."},
+  {cat:"Real Situations",en:"The tooth was on an angle, that could explain the pain.",de:"Der Zahn war schief, das könnte die Schmerzen erklären.",note:"<strong>Schief</strong> = crooked/at an angle. Könnte = could (conditional of können)."},
+  {cat:"Real Situations",en:"I need paracetamol, I'm worried I've taken too much ibuprofen.",de:"Ich brauche Paracetamol, ich mache mir Sorgen dass ich zu viel Ibuprofen genommen habe.",note:"<strong>Sich Sorgen machen</strong> = to worry. Mache mir Sorgen = I'm worried."},
+  {cat:"Real Situations",en:"I thought today I was just picking it up.",de:"Ich dachte heute hole ich es nur ab.",note:"<strong>Abholen</strong> = to pick up/collect. Separable: hole...ab."},
+  {cat:"Real Situations",en:"The quote is expensive but there's a lot of work to do so it probably makes sense.",de:"Das Angebot ist teuer, aber es gibt viel zu tun, also macht es wahrscheinlich Sinn.",note:"<strong>Also</strong> = so/therefore (not 'also' like in English). Es gibt = there is/there are."},
+
+  // ── CASUAL GERMAN ────────────────────────────────────────────
+  {cat:"Casual German",en:"I'll sort it out.",de:"Ich regel das.",note:"Most natural young German for 'I'll handle it'. Short and confident."},
+  {cat:"Casual German",en:"Can we get through? (someone blocking door)",de:"Dürfen wir mal durch?",note:"<strong>Mal</strong> softens it — casual not pushy."},
+  {cat:"Casual German",en:"Are you into jazz?",de:"Stehst du auf Jazz?",note:"<strong>Auf etwas stehen</strong> = to be into something. Nothing to do with standing."},
+  {cat:"Casual German",en:"That's so typical of him.",de:"Das ist typisch für ihn.",note:"Typical of someone = <strong>typisch für</strong>. Not 'von ihn' — common mistake."},
+  {cat:"Casual German",en:"Exactly the other way around.",de:"Genau anders rum.",note:"<strong>Anders rum</strong> = the other way around. Casual shortening of 'andersherum'."},
+  {cat:"Casual German",en:"I barely speak German.",de:"Ich spreche kaum Deutsch.",note:"<strong>Kaum</strong> = barely/hardly. 'So gut wie nie' = almost never, even stronger."},
+  {cat:"Casual German",en:"I feel embarrassed.",de:"Es ist mir peinlich.",note:"<strong>Peinlich</strong> is the word you'll hear most. 'Das ist mir so peinlich'."},
+  {cat:"Casual German",en:"You guys can fight over it.",de:"Ihr könnt euch darum streiten.",note:"<strong>Sich streiten um</strong> = to argue/fight over something. Reflexive verb."},
+  {cat:"Casual German",en:"It's just faster for me to type in English.",de:"Es ist einfach schneller für mich auf Englisch zu tippen.",note:"<strong>Einfach</strong> here = simply/just. Not 'easy'."},
+  {cat:"Casual German",en:"I got her new shoes.",de:"Ich hab ihr neue Schuhe gekauft.",note:"Dative: <strong>ihr</strong> = for her. Hab...gekauft = casual perfect tense."},
+  {cat:"Casual German",en:"Good effort!",de:"Guter Versuch!",note:"Can mean genuine praise OR 'nice try' sarcastically — tone decides it."},
+  {cat:"Casual German",en:"No idea.",de:"Keine Ahnung.",note:"One of the most used phrases in German. Short and natural."},
+  {cat:"Casual German",en:"I honestly don't care.",de:"Ist mir ehrlich gesagt egal.",note:"<strong>Egal</strong> = doesn't matter/I don't care. Mir ist egal = it's all the same to me."},
+  {cat:"Casual German",en:"That went really well.",de:"Das hat super geklappt.",note:"<strong>Klappen</strong> = to work out/go well. Hat geklappt = it worked out. Very common."},
+  {cat:"Casual German",en:"I'm not really feeling it today.",de:"Ich bin heute nicht so dabei.",note:"<strong>Dabei sein</strong> = to be with it. Nicht so dabei = not really into it."},
+  {cat:"Casual German",en:"He went completely overboard.",de:"Er hat's total übertrieben.",note:"<strong>Übertreiben</strong> = to exaggerate/go overboard. Hat übertrieben."},
+  {cat:"Casual German",en:"I nearly forgot.",de:"Ich hab's fast vergessen.",note:"<strong>Fast</strong> = almost/nearly. Hab's = habe es (casual)."},
+  {cat:"Casual German",en:"It's not worth it.",de:"Es lohnt sich nicht.",note:"<strong>Sich lohnen</strong> = to be worth it. Reflexive."},
+  {cat:"Casual German",en:"I have no clue what he wants.",de:"Ich hab keinen Schimmer was er will.",note:"<strong>Keinen Schimmer</strong> = no clue. Stronger than 'keine Ahnung'."},
+  {cat:"Casual German",en:"That's not how it works.",de:"So funktioniert das nicht.",note:"So = like that/that way. Very natural phrasing."},
+  {cat:"Casual German",en:"I'll let you know.",de:"Ich sag dir Bescheid.",note:"<strong>Bescheid sagen</strong> = to let someone know/give an update."},
+  {cat:"Casual German",en:"Things are kicking off here right now.",de:"Es geht hier gerade ab.",note:"<strong>Abgehen</strong> = things are lively/kicking off. Very colloquial."},
+  {cat:"Casual German",en:"Sorry, I've never been here before.",de:"Sorry, ich war noch nie hier.",note:"<strong>Noch nie</strong> = never (up to now). Nie alone = never generally."},
+  {cat:"Casual German",en:"It doesn't hurt, it feels normal.",de:"Es tut nicht weh, es fühlt sich normal an.",note:"<strong>Wehtun</strong> = to hurt. <strong>Sich anfühlen</strong> = to feel (sensation)."},
+  {cat:"Casual German",en:"We can't get it anymore because of Brexit.",de:"Wir bekommen es wegen Brexit nicht mehr.",note:"<strong>Nicht mehr</strong> = not anymore."},
+
+  // ── VOCABULARY ───────────────────────────────────────────────
+  {cat:"Vocabulary",en:"Imagine that! (use stell dir vor)",de:"Stell dir vor!",note:"<strong>Sich vorstellen</strong> = introduce yourself OR imagine. 'Stell dir vor' = imperative."},
+  {cat:"Vocabulary",en:"I can't imagine that.",de:"Das kann ich mir nicht vorstellen.",note:"Mir (dative) not mich — 'I can picture that to myself'."},
+  {cat:"Vocabulary",en:"That makes no sense.",de:"Das ergibt keinen Sinn.",note:"<strong>Ergeben</strong> = to result in/yield/make sense."},
+  {cat:"Vocabulary",en:"Come here! (motion towards you)",de:"Komm hierher!",note:"<strong>Hierher</strong> = to here (motion). Hier = here (location). Different words."},
+  {cat:"Vocabulary",en:"That was over the top.",de:"Das war übertrieben.",note:"<strong>Übertrieben</strong> = exaggerated/OTT. Also slang for 'insanely good'."},
+  {cat:"Vocabulary",en:"In the direction you're moving.",de:"In die Richtung, in die man sich bewegt.",note:"<strong>Sich bewegen</strong> = to move (oneself). Man = one/you (general)."},
+  {cat:"Vocabulary",en:"Hey, all good?",de:"Na, alles bene?",note:"<strong>Na</strong> = casual opener like 'so' or 'hey'. Bene = good (Italian, used in German slang)."},
+  {cat:"Vocabulary",en:"That's the final boss.",de:"Das ist der Endgegner.",note:"<strong>Endgegner</strong> = final boss (from gaming, now used casually for any big challenge)."},
+
+  // ── REFLEXIVE PRONOUNS — MICH/MIR/DICH/DIR/SICH ─────────────
+  {cat:"Reflexive Pronouns",en:"I'm washing myself.",de:"Ich wasche mich.",note:"No other object → accusative: <strong>mich</strong>. I wash [myself]."},
+  {cat:"Reflexive Pronouns",en:"I'm washing my hands.",de:"Ich wasche mir die Hände.",note:"Die Hände is the object → dative: <strong>mir</strong>. I wash [for myself] the hands."},
+  {cat:"Reflexive Pronouns",en:"Are you enjoying yourself?",de:"Amüsierst du dich?",note:"No other object → accusative: <strong>dich</strong>."},
+  {cat:"Reflexive Pronouns",en:"He's introducing himself.",de:"Er stellt sich vor.",note:"Er/sie/es always → <strong>sich</strong>. Both accusative and dative are 'sich' for third person."},
+  {cat:"Reflexive Pronouns",en:"I'm imagining it. (use vorstellen)",de:"Ich stelle mir das vor.",note:"Vorstellen (imagine) → dative: <strong>mir</strong>, because das is the object. Compare: ich stelle mich vor = I introduce myself."},
+  {cat:"Reflexive Pronouns",en:"She's looking after herself.",de:"Sie kümmert sich um sich.",note:"Sich kümmern um + sich = looking after herself. Both are sich for third person."},
+  {cat:"Reflexive Pronouns",en:"We're meeting up tomorrow.",de:"Wir treffen uns morgen.",note:"<strong>Uns</strong> = ourselves/each other. Sich treffen = to meet (each other)."},
+  {cat:"Reflexive Pronouns",en:"I hurt myself.",de:"Ich habe mich verletzt.",note:"No other object → accusative: <strong>mich</strong>."},
+  {cat:"Reflexive Pronouns",en:"I've brushed my teeth.",de:"Ich habe mir die Zähne geputzt.",note:"Die Zähne is the object → dative: <strong>mir</strong>."},
+  {cat:"Reflexive Pronouns",en:"Are you feeling better?",de:"Fühlst du dich besser?",note:"Sich fühlen → accusative: <strong>dich</strong>. No other object."},
+  {cat:"Reflexive Pronouns",en:"He can't remember it.",de:"Er kann sich nicht daran erinnern.",note:"Sich erinnern an = to remember. Er/sie/es → <strong>sich</strong>. Daran = at/about that."},
+  {cat:"Reflexive Pronouns",en:"I'm looking forward to the weekend.",de:"Ich freue mich auf das Wochenende.",note:"Sich freuen auf → accusative: <strong>mich</strong>. No other object."},
+  {cat:"Reflexive Pronouns",en:"That sounds good. (use anhören)",de:"Das hört sich gut an.",note:"Sich anhören = to sound. Es/das → <strong>sich</strong>. Separable: hört...an."},
+  {cat:"Reflexive Pronouns",en:"I need to get myself together.",de:"Ich muss mich zusammenreißen.",note:"Accusative: <strong>mich</strong>. Sich zusammenreißen = to pull yourself together."},
+  {cat:"Reflexive Pronouns",en:"He's complaining again.",de:"Er beschwert sich schon wieder.",note:"Sich beschweren = to complain. Er → <strong>sich</strong>. Schon wieder = already again."},
+  {cat:"Reflexive Pronouns",en:"I need to sit down.",de:"Ich muss mich hinsetzen.",note:"Sich hinsetzen = to sit down. Accusative: <strong>mich</strong>. Separable: muss mich hinsetzen."},
+  {cat:"Reflexive Pronouns",en:"They're arguing.",de:"Sie streiten sich.",note:"Sich streiten = to argue. Plural sie → <strong>sich</strong>."},
+  {cat:"Reflexive Pronouns",en:"I've settled in well.",de:"Ich habe mich gut eingelebt.",note:"Sich einleben = to settle in. Accusative: <strong>mich</strong>. Very useful for Hamburg life."},
+
+  // ── SEPARABLE VERBS — EXTENDED ───────────────────────────────
+  {cat:"Separable Verbs",en:"Turn it off.",de:"Mach es aus.",note:"<strong>Ausmachen</strong> = to turn off. Present splits: mach...aus. Or: 'Mach das aus'."},
+  {cat:"Separable Verbs",en:"I need to turn off the lights.",de:"Ich muss das Licht ausmachen.",note:"Modal + separable = stays together: <strong>ausmachen</strong> at end."},
+  {cat:"Separable Verbs",en:"Can you turn it up? (volume)",de:"Kannst du das lauter machen?",note:"<strong>Lauter machen</strong> = turn up (make louder). No separable verb — lauter is comparative."},
+  {cat:"Separable Verbs",en:"He didn't turn up.",de:"Er ist nicht aufgetaucht.",note:"<strong>Auftauchen</strong> = to show up/turn up. Uses sein. Nicht before participle."},
+  {cat:"Separable Verbs",en:"I need to stock up on that.",de:"Ich muss das nachbestellen.",note:"<strong>Nachbestellen</strong> = to reorder/stock up on. Stays together after muss."},
+  {cat:"Separable Verbs",en:"She hung up.",de:"Sie hat aufgelegt.",note:"<strong>Auflegen</strong> = to hang up (phone). Hat aufgelegt — uses haben."},
+  {cat:"Separable Verbs",en:"I need to take it back.",de:"Ich muss es zurückbringen.",note:"<strong>Zurückbringen</strong> = to bring back. Modal keeps it together at end."},
+  {cat:"Separable Verbs",en:"Can you write it down?",de:"Kannst du das aufschreiben?",note:"<strong>Aufschreiben</strong> = to write down. Stays together after kannst."},
+  {cat:"Separable Verbs",en:"It stands out.",de:"Es fällt auf.",note:"<strong>Auffallen</strong> = to stand out / catch attention. Present splits: fällt...auf."},
+  {cat:"Separable Verbs",en:"He passed out.",de:"Er ist umgekippt.",note:"<strong>Umkippen</strong> = to tip over / pass out / faint. Uses sein."},
+  {cat:"Separable Verbs",en:"I need to fill it in. (form)",de:"Ich muss das ausfüllen.",note:"<strong>Ausfüllen</strong> = to fill in/out. Modal keeps together at end."},
+  {cat:"Separable Verbs",en:"She gave it back.",de:"Sie hat es zurückgegeben.",note:"<strong>Zurückgeben</strong> = to give back. Hat zurückgegeben — uses haben."},
+  {cat:"Separable Verbs",en:"It sold out.",de:"Es ist ausverkauft.",note:"<strong>Ausverkauft</strong> = sold out. Actually an adjective here — 'ist ausverkauft' = is sold out."},
+  {cat:"Separable Verbs",en:"I looked it up.",de:"Ich habe es nachgeschaut.",note:"<strong>Nachschauen</strong> = to look up/check. Hat nachgeschaut — uses haben."},
+
+  // ── NEW VOCAB FROM SESSION ────────────────────────────────────
+  {cat:"Vocabulary",en:"That was unnecessary.",de:"Das war unnötig.",note:"<strong>Unnötig</strong> = unnecessary. Das war wirklich unnötig = that was really unnecessary."},
+  {cat:"Vocabulary",en:"It was kind of weird.",de:"Es war irgendwie komisch.",note:"<strong>Irgendwie</strong> = somehow/kind of. Very common filler — softens a statement."},
+  {cat:"Vocabulary",en:"That wasn't meant like that.",de:"Das war nicht so gemeint.",note:"<strong>Gemeint</strong> = meant (from meinen). Not to be confused with gemein = mean/unkind."},
+  {cat:"Vocabulary",en:"That requires a lot of effort.",de:"Das erfordert viel Mühe.",note:"<strong>Mühe</strong> = effort/trouble. Sich Mühe geben = to make an effort/try hard."},
+  {cat:"Vocabulary",en:"What is needed?",de:"Was wird benötigt?",note:"<strong>Benötigt</strong> = needed/required. More formal than gebraucht. Passive: wird benötigt."},
+  {cat:"Vocabulary",en:"At least it didn't rain. (use wenigstens)",de:"Wenigstens hat es nicht geregnet.",note:"<strong>Wenigstens</strong> = at least (resignation, making the best of it)."},
+  {cat:"Vocabulary",en:"That costs at least 50 euros.",de:"Das kostet mindestens 50 Euro.",note:"<strong>Mindestens</strong> = at least (minimum number/amount). Always use for quantities."},
+  {cat:"Vocabulary",en:"It was expensive, at least it was good.",de:"Es war teuer, zumindest war es gut.",note:"<strong>Zumindest</strong> = at least (conceding a point). For feelings/concessions, not numbers."},
+
+  // ── DER / DIE / DAS — ENDINGS ────────────────────────────────
+  // Format: type the article (der/die/das) for the word shown
+  {cat:"der/die/das",en:"___ Freundschaft (friendship) · ending: -schaft",de:"die Freundschaft",note:"<strong>-schaft</strong> endings → always <strong>die</strong>. Freundschaft, Mannschaft, Gemeinschaft, Gesellschaft."},
+  {cat:"der/die/das",en:"___ Freiheit (freedom) · ending: -heit",de:"die Freiheit",note:"<strong>-heit</strong> endings → always <strong>die</strong>. Freiheit, Schönheit, Gesundheit, Sicherheit."},
+  {cat:"der/die/das",en:"___ Möglichkeit (possibility) · ending: -keit",de:"die Möglichkeit",note:"<strong>-keit</strong> endings → always <strong>die</strong>. Möglichkeit, Freundlichkeit, Einsamkeit."},
+  {cat:"der/die/das",en:"___ Reservierung (reservation) · ending: -ung",de:"die Reservierung",note:"<strong>-ung</strong> endings → always <strong>die</strong>. Reservierung, Rechnung, Wohnung, Zeitung, Meinung."},
+  {cat:"der/die/das",en:"___ Situation (situation) · ending: -ion",de:"die Situation",note:"<strong>-ion</strong> endings → always <strong>die</strong>. Situation, Reaktion, Nation, Portion, Emotion."},
+  {cat:"der/die/das",en:"___ Qualität (quality) · ending: -tät",de:"die Qualität",note:"<strong>-tät</strong> endings → always <strong>die</strong>. Qualität, Universität, Identität, Aktivität."},
+  {cat:"der/die/das",en:"___ Musik (music) · ending: -ik",de:"die Musik",note:"<strong>-ik</strong> endings → almost always <strong>die</strong>. Musik, Kritik, Fabrik, Grammatik, Panik."},
+  {cat:"der/die/das",en:"___ Toleranz (tolerance) · ending: -anz",de:"die Toleranz",note:"<strong>-anz</strong> endings → always <strong>die</strong>. Toleranz, Distanz, Eleganz, Substanz."},
+  {cat:"der/die/das",en:"___ Konferenz (conference) · ending: -enz",de:"die Konferenz",note:"<strong>-enz</strong> endings → always <strong>die</strong>. Konferenz, Intelligenz, Existenz, Tendenz."},
+  {cat:"der/die/das",en:"___ Kultur (culture) · ending: -ur",de:"die Kultur",note:"<strong>-ur</strong> endings → usually <strong>die</strong>. Kultur, Natur, Struktur, Prozedur."},
+  {cat:"der/die/das",en:"___ Energie (energy) · ending: -ie",de:"die Energie",note:"<strong>-ie</strong> endings → almost always <strong>die</strong>. Energie, Demokratie, Symphonie, Therapie."},
+  {cat:"der/die/das",en:"___ Bäcker (baker) · ending: -er (person)",de:"der Bäcker",note:"<strong>-er</strong> person/agent nouns → almost always <strong>der</strong>. Bäcker, Lehrer, Fahrer, Manager, Computer (exception)."},
+  {cat:"der/die/das",en:"___ Tourismus (tourism) · ending: -ismus",de:"der Tourismus",note:"<strong>-ismus</strong> endings → always <strong>der</strong>. Tourismus, Kapitalismus, Realismus, Rassismus."},
+  {cat:"der/die/das",en:"___ Journalist (journalist) · ending: -ist",de:"der Journalist",note:"<strong>-ist</strong> person endings → always <strong>der</strong>. Journalist, Tourist, Pianist, Optimist."},
+  {cat:"der/die/das",en:"___ Doktor (doctor) · ending: -or",de:"der Doktor",note:"<strong>-or</strong> endings → usually <strong>der</strong>. Doktor, Motor, Reaktor, Senator, Humor."},
+  {cat:"der/die/das",en:"___ Mädchen (girl) · ending: -chen",de:"das Mädchen",note:"<strong>-chen</strong> diminutive endings → always <strong>das</strong>. Mädchen, Hähnchen, Brötchen, Städtchen."},
+  {cat:"der/die/das",en:"___ Kaninchen (rabbit) · ending: -chen",de:"das Kaninchen",note:"<strong>-chen</strong> → always <strong>das</strong>. Even when the base word has a different article."},
+  {cat:"der/die/das",en:"___ Fräulein (young woman) · ending: -lein",de:"das Fräulein",note:"<strong>-lein</strong> diminutive endings → always <strong>das</strong>. Like -chen, diminutives are always das."},
+  {cat:"der/die/das",en:"___ Dokument (document) · ending: -ment",de:"das Dokument",note:"<strong>-ment</strong> endings → almost always <strong>das</strong>. Dokument, Instrument, Parlament, Argument."},
+  {cat:"der/die/das",en:"___ Museum (museum) · ending: -um",de:"das Museum",note:"<strong>-um</strong> endings → almost always <strong>das</strong>. Museum, Zentrum, Datum, Studium, Publikum."},
+  {cat:"der/die/das",en:"___ Studium (studies) · ending: -ium",de:"das Studium",note:"<strong>-ium</strong> endings → always <strong>das</strong>. Studium, Gymnasium, Aquarium, Stadium."},
+  {cat:"der/die/das",en:"___ Ergebnis (result) · ending: -nis",de:"das Ergebnis",note:"<strong>-nis</strong> endings → usually <strong>das</strong>. Ergebnis, Geheimnis, Zeugnis, Erlebnis."},
+  {cat:"der/die/das",en:"___ Reichtum (wealth) · ending: -tum",de:"das Reichtum",note:"<strong>-tum</strong> endings → almost always <strong>das</strong>. Reichtum, Eigentum, Wachstum, Altertum."},
+  // Some real-life Hamburg/pub words to apply the rules
+  {cat:"der/die/das",en:"___ Rechnung (bill) · ending: -ung",de:"die Rechnung",note:"<strong>-ung</strong> → die. Rechnung = bill/invoice. One of the most useful pub words."},
+  {cat:"der/die/das",en:"___ Wohnung (flat) · ending: -ung",de:"die Wohnung",note:"<strong>-ung</strong> → die. Wohnung = flat/apartment. Very common in Hamburg life."},
+  {cat:"der/die/das",en:"___ Zeitung (newspaper) · ending: -ung",de:"die Zeitung",note:"<strong>-ung</strong> → die. Every -ung word is die without exception."},
+  {cat:"der/die/das",en:"___ Bestellung (order) · ending: -ung",de:"die Bestellung",note:"<strong>-ung</strong> → die. Bestellung = order (in a pub/restaurant). Very useful."},
+  {cat:"der/die/das",en:"___ Verbindung (connection) · ending: -ung",de:"die Verbindung",note:"<strong>-ung</strong> → die. Verbindung = connection/link. Pattern is rock solid."},
+  {cat:"der/die/das",en:"___ Erfahrung (experience) · ending: -ung",de:"die Erfahrung",note:"<strong>-ung</strong> → die. Erfahrung = experience. Good B1 word."},
+
+  // ── GERMAN HUMOUR / SLANG ─────────────────────────────────────
+  {cat:"German Humour",en:"Did you drink paint or something? (questioning someone's sanity)",de:"Sag mal, hast du Lack gesoffen?",note:"<strong>Lack saufen</strong> = to drink paint. Sag mal = 'tell me' / used as a casual opener. Gesoffen = drunk (colloquial past of saufen — to booze)."},
+  {cat:"German Humour",en:"Were you combed with a hammer as a kid? (messy hair)",de:"Wurdest du als Kind mit dem Hammer gekämmt?",note:"<strong>Kämmen</strong> = to comb. Gekämmt = combed. Würdest → wurdest here (past passive). Als Kind = as a child."},
+
+  // ── MICH/MIR · DICH/DIR · IHN/IHM ───────────────────────────
+  // Rule: can you put 'to' or 'for' in front? → dative (mir/dir/ihm). Direct object? → accusative (mich/dich/ihn).
+  {cat:"mich/mir · dich/dir",en:"She saw me. (direct)",de:"Sie hat mich gesehen.",note:"Direct object → accusative: <strong>mich</strong>. 'She saw to me' ❌ → not dative."},
+  {cat:"mich/mir · dich/dir",en:"She gave it to me.",de:"Sie hat es mir gegeben.",note:"Receiver → dative: <strong>mir</strong>. 'To me' = dative. Eine Sache is the direct object."},
+  {cat:"mich/mir · dich/dir",en:"I called you.",de:"Ich hab dich angerufen.",note:"Direct → accusative: <strong>dich</strong>. You're being called directly."},
+  {cat:"mich/mir · dich/dir",en:"Can you do it for me?",de:"Kannst du es mir machen?",note:"'For me' → dative: <strong>mir</strong>. You're the receiver of the favour."},
+  {cat:"mich/mir · dich/dir",en:"It happened to you.",de:"Es ist dir passiert.",note:"'To you' → dative: <strong>dir</strong>. Passieren always takes dative."},
+  {cat:"mich/mir · dich/dir",en:"I hurt myself.",de:"Ich hab mich verletzt.",note:"Direct → accusative: <strong>mich</strong>. Acting directly on yourself."},
+  {cat:"mich/mir · dich/dir",en:"She charged him too much.",de:"Sie hat ihm zu viel berechnet.",note:"Receiver → dative: <strong>ihm</strong>. He's receiving the charge, not directly acted on."},
+  {cat:"mich/mir · dich/dir",en:"He hit me.",de:"Er hat mich geschlagen.",note:"Direct → accusative: <strong>mich</strong>. 'He hit to me' ❌"},
+  {cat:"mich/mir · dich/dir",en:"She explained it to me.",de:"Sie hat es mir erklärt.",note:"'To me' → dative: <strong>mir</strong>. You're receiving the explanation."},
+  {cat:"mich/mir · dich/dir",en:"I can see you.",de:"Ich kann dich sehen.",note:"Direct → accusative: <strong>dich</strong>. Seeing someone directly."},
+  {cat:"mich/mir · dich/dir",en:"He sent me a message.",de:"Er hat mir eine Nachricht geschickt.",note:"'To me' → dative: <strong>mir</strong>. Eine Nachricht is the direct object — you're the receiver."},
+  {cat:"mich/mir · dich/dir",en:"I'll get it for you.",de:"Ich hol es dir.",note:"'For you' → dative: <strong>dir</strong>. You're receiving the thing."},
+  {cat:"mich/mir · dich/dir",en:"She told him everything.",de:"Sie hat ihm alles erzählt.",note:"'To him' → dative: <strong>ihm</strong>. Alles = direct object. He's the receiver."},
+  {cat:"mich/mir · dich/dir",en:"Do you believe me? (glauben always takes dative)",de:"Glaubst du mir?",note:"<strong>Glauben</strong> always takes dative — 'believe to me'. Mir not mich. Common trap."},
+  {cat:"mich/mir · dich/dir",en:"She helped me. (helfen always takes dative)",de:"Sie hat mir geholfen.",note:"<strong>Helfen</strong> always takes dative. Mir not mich. Very common verb — always dative."},
+  {cat:"mich/mir · dich/dir",en:"I follow you. (folgen always takes dative)",de:"Ich folge dir.",note:"<strong>Folgen</strong> always takes dative. Dir not dich."},
+  {cat:"mich/mir · dich/dir",en:"I miss you. (vermissen takes accusative)",de:"Ich vermisse dich.",note:"<strong>Vermissen</strong> takes accusative — direct object. Dich not dir. Common one to get wrong."},
+  {cat:"mich/mir · dich/dir",en:"That belongs to me. (gehören takes dative)",de:"Das gehört mir.",note:"<strong>Gehören</strong> takes dative — belongs *to* me. Mir not mich."},
+  {cat:"mich/mir · dich/dir",en:"I thanked him.",de:"Ich hab ihm gedankt.",note:"<strong>Danken</strong> always takes dative — 'give thanks to him'. Ihm not ihn."},
+  {cat:"mich/mir · dich/dir",en:"It suits you. (passen takes dative)",de:"Es passt dir.",note:"<strong>Passen</strong> takes dative — suits/fits *to* you. Dir not dich."},
+
+  // ── AMK STYLE — raw, honest, conversational German ───────────
+  // Sentences inspired by the emotional, simple storytelling style of AnnenMayKantereit
+  {cat:"AMK Style",en:"I don't know what I'm supposed to do without you.",de:"Ich weiß nicht was ich ohne dich machen soll.",note:"<strong>Ohne</strong> + accusative: ohne dich (not dir). Soll = am supposed to (modal)."},
+  {cat:"AMK Style",en:"Everything stays the same and nothing changes.",de:"Alles bleibt gleich und nichts ändert sich.",note:"<strong>Sich ändern</strong> = to change (reflexive). Gleich bleiben = to stay the same."},
+  {cat:"AMK Style",en:"I can't sleep when I think about it.",de:"Ich kann nicht schlafen wenn ich daran denke.",note:"<strong>Denken an</strong> = to think about. Daran = da+an (about that). Wenn clause: verb to end."},
+  {cat:"AMK Style",en:"Nobody understands me.",de:"Niemand versteht mich.",note:"<strong>Niemand</strong> = nobody/no one. Direct object → accusative: mich."},
+  {cat:"AMK Style",en:"Sometimes I don't know where I belong.",de:"Manchmal weiß ich nicht wo ich hingehöre.",note:"<strong>Hingehören</strong> = to belong (somewhere). Wo clause: verb to end. Manchmal = sometimes."},
+  {cat:"AMK Style",en:"It was all just a dream.",de:"Es war alles nur ein Traum.",note:"Word order: Es war alles — verb second. Nur = just/only. Ein Traum = a dream."},
+  {cat:"AMK Style",en:"I miss the way things used to be.",de:"Ich vermisse wie es früher war.",note:"<strong>Früher</strong> = earlier / the way things used to be. Wie clause: verb to end."},
+  {cat:"AMK Style",en:"Why does everything have to be so complicated?",de:"Warum muss alles so kompliziert sein?",note:"Modal verb muss + infinitive at end: sein. Warum = why — pushes verb to second position."},
+  {cat:"AMK Style",en:"I feel like nobody is listening.",de:"Ich hab das Gefühl dass niemand zuhört.",note:"<strong>Das Gefühl haben dass</strong> = to feel like / have the feeling that. Zuhören = to listen (separable)."},
+  {cat:"AMK Style",en:"We don't talk like we used to.",de:"Wir reden nicht mehr so wie früher.",note:"<strong>Nicht mehr</strong> = not anymore. So wie früher = like before/used to. Very natural phrasing."},
+  {cat:"AMK Style",en:"I don't want to lose you.",de:"Ich will dich nicht verlieren.",note:"Modal will + infinitive at end: verlieren. Accusative: dich (direct object — losing you directly)."},
+  {cat:"AMK Style",en:"Everything was easier when we were together.",de:"Alles war einfacher als wir zusammen waren.",note:"<strong>Als</strong> = when (past, one-time). Zusammen = together. Als clause: verb to end."},
+  {cat:"AMK Style",en:"I don't know how to say it.",de:"Ich weiß nicht wie ich es sagen soll.",note:"Wie clause: verb to end — wie ich es sagen <strong>soll</strong>. Soll = am supposed to / how to."},
+  {cat:"AMK Style",en:"Sometimes you just have to let go.",de:"Manchmal muss man einfach loslassen.",note:"<strong>Loslassen</strong> = to let go. Man = one/you (general). Einfach = just/simply."},
+  {cat:"AMK Style",en:"I've been waiting for this moment.",de:"Ich habe auf diesen Moment gewartet.",note:"<strong>Warten auf</strong> = to wait for. Takes accusative: auf diesen Moment."},
+  {cat:"AMK Style",en:"It feels like time is standing still.",de:"Es fühlt sich an als würde die Zeit stillstehen.",note:"<strong>Als würde</strong> = as if/like (hypothetical). Sich anfühlen = to feel. Stillstehen = to stand still."},
+  {cat:"AMK Style",en:"I've changed, and so have you.",de:"Ich hab mich verändert, und du dich auch.",note:"<strong>Sich verändern</strong> = to change (about a person). Accusative reflexive: mich, dich."},
+  {cat:"AMK Style",en:"Nobody said it was going to be easy.",de:"Niemand hat gesagt dass es einfach wird.",note:"Dass clause: verb to end — dass es einfach <strong>wird</strong>. Wird = will be (future)."},
+  {cat:"AMK Style",en:"I keep thinking about what could have been.",de:"Ich denke immer wieder daran was hätte sein können.",note:"<strong>Immer wieder</strong> = again and again / keep doing. Hätte sein können = could have been (past conditional)."},
+  {cat:"AMK Style",en:"Tell me that everything is going to be alright.",de:"Sag mir dass alles gut wird.",note:"Dative: sag <strong>mir</strong> (tell to me). Dass clause: verb to end — alles gut <strong>wird</strong>."},
+
+  // ── MORE PUB / REAL LIFE ──────────────────────────────────────
+  {cat:"Pub German",en:"The most popular are teriyaki and BBQ.",de:"Am beliebtesten sind Teriyaki und BBQ.",note:"<strong>Am beliebtesten</strong> = the most popular. Superlative with am...sten — very common pattern."},
+  {cat:"Pub German",en:"But the others who want to come don't feel the same way.",de:"Ja aber die anderen die herkommen wollen sehen das anders.",note:"<strong>Anders sehen</strong> = to see differently / feel differently. Relative clause: die herkommen wollen."},
+  {cat:"Pub German",en:"Most people don't like it.",de:"Die meisten mögen es nicht.",note:"<strong>Die meisten</strong> = most people/most of them. Very natural — more casual than 'die Mehrheit'."},
+  {cat:"Pub German",en:"Thanks for coming, give Danny a round of applause, we'll come round shortly to collect tips or money from under your sofa for the quiz master.",de:"Danke fürs Kommen, gebt Danny einen Applaus, wir kommen gleich rum um Trinkgeld einzusammeln, oder Geld von unter eurem Sofa für den Quizmaster.",note:"<strong>Fürs</strong> = für das. Gleich = shortly/in a moment. Einsammeln = to collect/gather up. Rumkommen = to come around."},
+
+  // ── HEALTH / BODY ─────────────────────────────────────────────
+  {cat:"Real Situations",en:"I look after my teeth well.",de:"Ich pflege meine Zähne gut.",note:"<strong>Pflegen</strong> = to look after/care for. More natural than 'kümmern' for teeth/skin/body."},
+  {cat:"Real Situations",en:"How long will it last approximately?",de:"Wie lange hält das ungefähr?",note:"<strong>Halten</strong> = to last/hold. Ungefähr = approximately/roughly. Very useful at appointments."},
+
+  // ── WIRD / WERDEN ─────────────────────────────────────────────
+  // Three jobs: 1) future 2) passive 3) becoming
+  {cat:"wird/werden",en:"It'll be fine.",de:"Es wird gut.",note:"<strong>Wird</strong> = future tense. Subject + wird + adjective/infinitive. Simple and very common."},
+  {cat:"wird/werden",en:"It's getting cold.",de:"Es wird kalt.",note:"<strong>Wird</strong> = becoming. A change happening — not war (was) or ist (is right now)."},
+  {cat:"wird/werden",en:"He's becoming a doctor.",de:"Er wird Arzt.",note:"<strong>Wird</strong> = becoming. No article needed with professions after werden."},
+  {cat:"wird/werden",en:"It's being fixed right now.",de:"Es wird gerade repariert.",note:"<strong>Wird</strong> + past participle = passive voice. Gerade = right now/currently."},
+  {cat:"wird/werden",en:"I'll call you tomorrow.",de:"Ich werde dich morgen anrufen.",note:"<strong>Werde</strong> + infinitive at end = future tense. Anrufen stays together as infinitive."},
+  {cat:"wird/werden",en:"The order is being taken.",de:"Die Bestellung wird aufgenommen.",note:"Passive: <strong>wird</strong> + past participle. Aufnehmen = to take (an order). Participle at end."},
+  {cat:"wird/werden",en:"It's going to rain.",de:"Es wird regnen.",note:"<strong>Wird</strong> + infinitive = future. Very natural for weather — more common than 'es regnet bald'."},
+  {cat:"wird/werden",en:"The shift needs to be covered.",de:"Die Schicht muss abgedeckt werden.",note:"Passive with modal: muss + past participle + <strong>werden</strong> at end. Werden goes last."},
+  {cat:"wird/werden",en:"He's going to be late.",de:"Er wird zu spät kommen.",note:"<strong>Wird</strong> + infinitive at end = future. Zu spät kommen = to come too late / be late."},
+  {cat:"wird/werden",en:"It's getting better.",de:"Es wird besser.",note:"<strong>Wird</strong> = becoming/getting. Change in state. Besser = better (comparative of gut)."},
+  {cat:"wird/werden",en:"Everything will be sorted out.",de:"Alles wird geregelt.",note:"Passive: <strong>wird</strong> + past participle. Geregelt = sorted/regulated (from regeln)."},
+  {cat:"wird/werden",en:"She's going to be a problem.",de:"Sie wird ein Problem werden.",note:"Double werden — first = going to be (future), second = become. Sounds odd but correct."},
+  {cat:"wird/werden",en:"The table is being cleared.",de:"Der Tisch wird abgeräumt.",note:"Passive: <strong>wird</strong> + past participle. Abräumen = to clear (a table). Very pub-relevant."},
+  {cat:"wird/werden",en:"It'll sort itself out.",de:"Das wird sich schon erledigen.",note:"<strong>Schon</strong> here = eventually / it'll happen. Sich erledigen = to sort itself out."},
+
+  // ── PREPOSITIONS — um, an, auf, in, vor ───────────────────────
+  // um = around / at (time) / about
+  {cat:"Prepositions",en:"I'll be there at 8.",de:"Ich bin um 8 da.",note:"<strong>Um</strong> + time = at. Um 8 Uhr, um Mitternacht, um 3. Always accusative with um."},
+  {cat:"Prepositions",en:"We close at midnight.",de:"Wir schließen um Mitternacht.",note:"<strong>Um</strong> + time. Mitternacht = midnight. Schließen = to close."},
+  {cat:"Prepositions",en:"He walked around the table.",de:"Er ist um den Tisch herumgegangen.",note:"<strong>Um... herum</strong> = around (motion). Always accusative: um den Tisch."},
+  {cat:"Prepositions",en:"It's about money.",de:"Es geht um Geld.",note:"<strong>Um</strong> = about/concerning. Es geht um = it's about. Very common phrase."},
+  {cat:"Prepositions",en:"I'm applying for the job.",de:"Ich bewerbe mich um die Stelle.",note:"<strong>Sich bewerben um</strong> = to apply for. Um + accusative: um die Stelle."},
+  // an = at / on (vertical surfaces, edges, days)
+  {cat:"Prepositions",en:"I'm working on it.",de:"Ich arbeite daran.",note:"<strong>An</strong> + dative for location/state. Daran = da+an (on/at that). Contracted casual form."},
+  {cat:"Prepositions",en:"On Monday we're closed.",de:"Am Montag haben wir geschlossen.",note:"<strong>Am</strong> = an + dem. Days of week always use am: am Montag, am Freitag."},
+  {cat:"Prepositions",en:"He's standing at the bar.",de:"Er steht an der Bar.",note:"<strong>An + dative</strong> for location (not moving): an der (feminine dative). Standing still → dative."},
+  {cat:"Prepositions",en:"He's walking up to the bar.",de:"Er geht an die Bar.",note:"<strong>An + accusative</strong> for motion towards: an die (feminine accusative). Moving → accusative."},
+  {cat:"Prepositions",en:"I ran along the Alster.",de:"Ich bin an der Alster entlanggelaufen.",note:"<strong>An + dative</strong> for location alongside something. Entlanglaufen = to run along."},
+  // auf = on (horizontal surfaces) / for (waiting/hoping)
+  {cat:"Prepositions",en:"The menu is on the table.",de:"Die Speisekarte liegt auf dem Tisch.",note:"<strong>Auf + dative</strong> for location (not moving): auf dem (masculine dative). Lying on = dative."},
+  {cat:"Prepositions",en:"Put it on the table.",de:"Leg es auf den Tisch.",note:"<strong>Auf + accusative</strong> for motion onto: auf den (masculine accusative). Putting → accusative."},
+  {cat:"Prepositions",en:"I'm waiting for him.",de:"Ich warte auf ihn.",note:"<strong>Warten auf</strong> = to wait for. Always accusative: auf ihn, auf dich, auf sie."},
+  {cat:"Prepositions",en:"Are you into it? (stehen auf)",de:"Stehst du darauf?",note:"<strong>Stehen auf</strong> = to be into something. Darauf = da+auf. Always accusative with this meaning."},
+  // in = in / into
+  {cat:"Prepositions",en:"I'm in the kitchen.",de:"Ich bin in der Küche.",note:"<strong>In + dative</strong> for location: in der (feminine dative). Already there → dative."},
+  {cat:"Prepositions",en:"I'm going into the kitchen.",de:"Ich gehe in die Küche.",note:"<strong>In + accusative</strong> for motion into: in die (feminine accusative). Moving → accusative."},
+  {cat:"Prepositions",en:"He lives in Hamburg.",de:"Er wohnt in Hamburg.",note:"<strong>In</strong> + city/country names = no article needed. In Hamburg, in Deutschland, in Neuseeland."},
+  {cat:"Prepositions",en:"I'll be there in 10 minutes.",de:"Ich bin in 10 Minuten da.",note:"<strong>In + dative</strong> for time duration: in 10 Minuten, in einer Stunde."},
+  // vor = before / in front of / ago
+  {cat:"Prepositions",en:"He's standing in front of the door.",de:"Er steht vor der Tür.",note:"<strong>Vor + dative</strong> for location: vor der (feminine dative). Standing still → dative."},
+  {cat:"Prepositions",en:"I had my teeth out 3 days ago.",de:"Ich hab mir vor 3 Tagen die Zähne ziehen lassen.",note:"<strong>Vor + dative</strong> for time ago: vor 3 Tagen, vor einer Woche, vor einem Jahr."},
+  {cat:"Prepositions",en:"Before the shift I need to eat.",de:"Vor der Schicht muss ich essen.",note:"<strong>Vor + dative</strong> = before (in time). Vor der Schicht = before the shift."},
+  {cat:"Prepositions",en:"I'm scared of it.",de:"Ich habe Angst davor.",note:"<strong>Angst vor</strong> = fear of. Davor = da+vor (of/before that). Angst haben vor + dative."},
+
+  // ── LATEST SENTENCES ─────────────────────────────────────────
+  {cat:"Casual German",en:"They will never be used.",de:"Die werden nie benutzt.",note:"Passive with werden: <strong>werden</strong> + past participle. Or casual: 'die braucht kein Mensch' = nobody needs those."},
+  {cat:"Casual German",en:"I'll pass out.",de:"Ich kipp um.",note:"<strong>Umkippen</strong> = to tip over / pass out. Very casual. 'Ich fall gleich um' = I'm about to pass out."},
+  {cat:"Casual German",en:"Don't touch me.",de:"Fass mich nicht an.",note:"<strong>Anfassen</strong> = to touch. Imperative: fass...an. Accusative: mich (direct object)."},
+  {cat:"Casual German",en:"They're not picking up the phone.",de:"Die gehen nicht ran.",note:"<strong>Rangehen</strong> = to pick up (the phone). Very casual. Full form: ans Telefon gehen."},
+  {cat:"Casual German",en:"I don't care about money anymore.",de:"Geld ist mir egal geworden.",note:"<strong>Egal werden</strong> = to stop caring about / become indifferent to. Mir = dative (it's become all the same to me)."},
+  {cat:"Casual German",en:"We will look after her.",de:"Wir werden uns um sie kümmern.",note:"<strong>Sich kümmern um</strong> = to look after. Future: werden + infinitive at end. Uns = reflexive plural."},
+  {cat:"Casual German",en:"I would have but I didn't have an option.",de:"Ich hätte es gemacht, aber ich hatte keine andere Wahl.",note:"<strong>Hätte gemacht</strong> = would have done (past conditional). Keine andere Wahl = no other choice."},
+  {cat:"Pub German",en:"How did you two like Lithuania, would you go back?",de:"Wie hat euch Litauen gefallen, würdet ihr nochmal hinfahren?",note:"<strong>Gefallen</strong> takes dative: euch (you two). Würdet ihr = would you (plural). Hinfahren = to go there."},
+  {cat:"Pub German",en:"No the ones we had yesterday, I liked those — I thought you liked them too.",de:"Nein die von gestern, die mochte ich — ich dachte du mochtest sie auch.",note:"<strong>Die von gestern</strong> = the ones from yesterday. Mochte = liked (simple past of mögen). Natural word order."},
+  {cat:"Pub German",en:"I was just saying to Zoe that we should go to the market on Saturday.",de:"Ich hab nur zu Zoe gesagt, dass wir am Samstag auf den Markt gehen sollten.",note:"<strong>Zu jemandem sagen</strong> = to say to someone. Dass clause: verb to end — gehen sollten."},
+  {cat:"Pub German",en:"He was here earlier than us and we're still waiting on him.",de:"Er war früher hier als wir und wir warten immer noch auf ihn.",note:"<strong>Früher als</strong> = earlier than. Immer noch = still. Warten auf + accusative: auf ihn."},
+  {cat:"Pub German",en:"Didn't we do that yesterday on the way to the bar?",de:"Haben wir das nicht gestern auf dem Weg zur Bar gemacht?",note:"<strong>Auf dem Weg</strong> = on the way (dative). Zur = zu + der. Question: verb first."},
+  {cat:"Real Situations",en:"I think only reason you bought me that was so you could wear it.",de:"Ich glaube der einzige Grund warum du mir das gekauft hast war damit du es selbst tragen kannst.",note:"<strong>Damit</strong> = so that (purpose clause). Selbst = yourself/himself. Mir = dative (bought for me)."},
+
+  // ── WERDE / WÜRDE / HÄTTE / WÄRE ─────────────────────────────
+  {cat:"werde/würde/hätte/wäre",en:"I won't be here.",de:"Ich werde nicht hier sein.",note:"<strong>Werde</strong> = will (future). Ich werde + infinitive at end. Not würde — that's 'would'."},
+  {cat:"werde/würde/hätte/wäre",en:"I would have just stayed here.",de:"Ich wäre einfach hier geblieben.",note:"<strong>Wäre geblieben</strong> = would have stayed (past conditional). Bleiben uses sein → wäre not hätte."},
+  {cat:"werde/würde/hätte/wäre",en:"I would have done it differently.",de:"Ich hätte es anders gemacht.",note:"<strong>Hätte gemacht</strong> = would have done. Machen uses haben → hätte."},
+  {cat:"werde/würde/hätte/wäre",en:"I wouldn't have come if I'd known.",de:"Ich wäre nicht gekommen wenn ich es gewusst hätte.",note:"<strong>Wäre gekommen</strong> = would have come. Kommen uses sein → wäre. Gewusst hätte = had known."},
+  {cat:"werde/würde/hätte/wäre",en:"That would be great.",de:"Das wäre super.",note:"<strong>Wäre</strong> = would be (conditional of sein). Das wäre toll/super/schön — all very natural."},
+  {cat:"werde/würde/hätte/wäre",en:"I would do it but I don't have time.",de:"Ich würde es machen aber ich hab keine Zeit.",note:"<strong>Würde</strong> = would (conditional). Present situation — not past. Würde + infinitive at end."},
+  {cat:"werde/würde/hätte/wäre",en:"I'll be there in 10 minutes.",de:"Ich werde in 10 Minuten da sein.",note:"<strong>Werde</strong> = will. Or drop it: 'ich bin in 10 Minuten da' — equally natural in speech."},
+  {cat:"werde/würde/hätte/wäre",en:"I would have called but I lost my phone.",de:"Ich hätte angerufen aber ich hab mein Handy verloren.",note:"<strong>Hätte angerufen</strong> = would have called. Anrufen uses haben → hätte."},
+  {cat:"werde/würde/hätte/wäre",en:"It would be better if you called first.",de:"Es wäre besser wenn du zuerst anrufst.",note:"<strong>Wäre</strong> = would be. Wenn clause: verb to end — wenn du zuerst <strong>anrufst</strong>."},
+  {cat:"werde/würde/hätte/wäre",en:"I never would have thought that.",de:"Das hätte ich nie gedacht.",note:"<strong>Hätte gedacht</strong> = would have thought. Very common expression of surprise."},
+  {cat:"werde/würde/hätte/wäre",en:"I thought it would be easier.",de:"Ich dachte es wäre einfacher.",note:"<strong>Wäre</strong> = would be (reported thought in past). Einfacher = easier (comparative)."},
+  {cat:"werde/würde/hätte/wäre",en:"That would have been nice.",de:"Das wäre schön gewesen.",note:"<strong>Wäre gewesen</strong> = would have been (past conditional of sein)."},
+  {cat:"werde/würde/hätte/wäre",en:"I'll figure it out.",de:"Ich werde das schon herausfinden.",note:"<strong>Werde</strong> = will. Schon = eventually/I'm sure. Herausfinden = to figure out."},
+  {cat:"werde/würde/hätte/wäre",en:"I would never have done that.",de:"Das hätte ich nie gemacht.",note:"<strong>Hätte gemacht</strong> = would have done. Natural order: Das hätte ich nie..."},
+  {cat:"werde/würde/hätte/wäre",en:"I won't be able to make it.",de:"Ich werde es nicht schaffen.",note:"<strong>Werde</strong> = will. Schaffen = to manage/make it. Natural for cancelling plans."},
+  {cat:"werde/würde/hätte/wäre",en:"He would have been perfect for it.",de:"Er wäre perfekt dafür gewesen.",note:"<strong>Wäre gewesen</strong> = would have been. Dafür = for that/it."},
+  {cat:"werde/würde/hätte/wäre",en:"It started as a holiday, I thought I'd just stay for a year.",de:"Es hat als Urlaub angefangen, ich dachte ich bleib einfach ein Jahr.",note:"<strong>Angefangen</strong> = started (from anfangen). Dachte = thought. No dass needed casually."},
+  {cat:"werde/würde/hätte/wäre",en:"I would have but I didn't have a choice.",de:"Ich hätte es gemacht aber ich hatte keine andere Wahl.",note:"<strong>Hätte gemacht</strong> = would have done. Keine andere Wahl = no other choice."},
+  {cat:"werde/würde/hätte/wäre",en:"It would've turned into more anyway.",de:"Daraus wäre sowieso mehr geworden.",note:"<strong>Wäre geworden</strong> = would have become. Daraus = out of that. Sowieso = anyway."},
+
+  // ── RECENT SENTENCES & VOCAB ─────────────────────────────────
+  {cat:"Vocabulary",en:"It's tempting.",de:"Es ist verlockend.",note:"<strong>Verlockend</strong> = tempting/enticing. Nice word, useful for food, offers, situations."},
+  {cat:"Vocabulary",en:"Done / sorted / taken care of.",de:"Erledigt.",note:"<strong>Erledigt</strong> = done (past participle of erledigen used as standalone). Very satisfying one-word response."},
+  {cat:"Vocabulary",en:"At the time… / back then…",de:"Damals… / Zu dem Zeitpunkt…",note:"<strong>Damals</strong> = back then (casual). <strong>Zu dem Zeitpunkt</strong> = at that point in time (slightly more formal)."},
+  {cat:"Vocabulary",en:"To insult / to offend someone.",de:"Jemanden beleidigen.",note:"<strong>Beleidigen</strong> = to insult/offend. Beleidigt = offended. 'Er ist beleidigt' = he's offended/sulking."},
+  {cat:"Vocabulary",en:"Treat yourself! / Go on, indulge.",de:"Gönn dir!",note:"<strong>Sich gönnen</strong> = to treat yourself / allow yourself something. 'Ich gönn mir ein Bier' = I'm treating myself to a beer."},
+  {cat:"Casual German",en:"It's stuck on the door.",de:"Es klemmt an der Tür.",note:"<strong>Klemmen</strong> = to be stuck/jammed. For doors, drawers, anything that won't budge."},
+  {cat:"Casual German",en:"Should I put the ice in here?",de:"Soll ich das Eis hier reintun?",note:"<strong>Reintun</strong> = to put in/inside. Very casual — short for hineintun."},
+  {cat:"Casual German",en:"Should I put it in the bag?",de:"Soll ich es in die Tasche stecken?",note:"<strong>Stecken</strong> = most natural for putting something into a bag/pocket. Tun also works but stecken sounds more native."},
+  {cat:"Casual German",en:"I agree.",de:"Da stimme ich zu.",note:"<strong>Zustimmen</strong> = to agree. Or more casual: 'Stimmt, da bin ich dabei' = yeah, I'm with you on that."},
+  {cat:"Casual German",en:"As you can tell, it gets busy in here.",de:"Wie man sehen kann, wird's hier voll.",note:"<strong>Wie man sehen kann</strong> = as you can see. Wird's = wird es (casual). Voll = full/busy."},
+  {cat:"Casual German",en:"How does it compare to Düsseldorf?",de:"Wie ist es im Vergleich zu Düsseldorf?",note:"<strong>Im Vergleich zu</strong> = in comparison to. Takes dative: zu Düsseldorf."},
+  {cat:"Casual German",en:"My German should be better by now.",de:"Mein Deutsch müsste eigentlich besser sein.",note:"<strong>Eigentlich</strong> = actually / by now / really. Müsste = should (softer than muss). Very natural."},
+  {cat:"Casual German",en:"I don't want to go home, I'm having too much fun living here.",de:"Ich will nicht nach Hause, ich hab zu viel Spaß hier zu leben.",note:"<strong>Zu viel Spaß haben</strong> = to be having too much fun. Hier zu leben = living here (infinitive clause)."},
+  {cat:"Pub German",en:"Thanks for coming, someone will come around to collect tips for the quiz master if you'd be so kind.",de:"Danke fürs Kommen, gleich wird jemand rumkommen um Trinkgeld für den Quizmaster einzusammeln, wenn ihr so nett wärt.",note:"<strong>Fürs</strong> = für das. Gleich = shortly. Einsammeln = to collect up. Wenn ihr so nett wärt = if you'd be so kind."},
+  {cat:"Pub German",en:"We do a quiz every Monday, please book 1 to 2 weeks in advance.",de:"Wir machen jeden Montag ein Quiz, bitte bucht 1 bis 2 Wochen im Voraus.",note:"<strong>Im Voraus</strong> = in advance. Jeden Montag = every Monday (accusative). Bucht = imperative plural (you guys book)."},
+  {cat:"Pub German",en:"See if it suits me here. (trying something on / seeing if something works)",de:"Schau mal ob es mir hier gut passt.",note:"<strong>Passen</strong> = to suit/fit. Dative: mir (suits to me). Ob clause: verb to end."},
+  {cat:"Real Situations",en:"How does it compare? (lit: what's it like in comparison)",de:"Wie ist es im Vergleich?",note:"Short and natural. Add 'zu + dative' for what you're comparing to: im Vergleich zu Hamburg."},
+  {cat:"Casual German",en:"How can it be that a place smells so disgusting.",de:"Wie kann es sein dass ein Ort so ekelhaft riecht.",note:"<strong>Ekelhaft</strong> = disgusting/revolting. Riechen = to smell. Dass clause: verb to end — riecht."},
+  {cat:"Casual German",en:"I thought I could do it myself.",de:"Ich dachte ich kann es selbst machen.",note:"<strong>Dachte</strong> = thought (simple past of denken). Selbst = myself. No dass needed in casual speech."},
+  {cat:"Casual German",en:"Because I won't be here.",de:"Weil ich nicht hier sein werde.",note:"<strong>Weil</strong> clause: verb to end — sein werde. Werde = will (future). Weil ich nicht hier sein <strong>werde</strong>."},
+  {cat:"Casual German",en:"I would have just stayed here because of that.",de:"Ich wäre einfach hier geblieben wegen dem.",note:"<strong>Wäre geblieben</strong> = would have stayed. Wegen dem = because of that (casual dative)."},
+];
+
+const PER = 15;
+const STORE_KEY = 'deutsch_caleb_v1';
+
+// localStorage schema:
+// { cards: { [en]: { seen: N, correct: N, wrong: N, lastSeen: timestamp, interval: days } } }
+
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {cards:{},weakCats:{}}; }
+  catch(e) { return {cards:{},weakCats:{}}; }
+}
+function saveStore(s) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch(e){}
+}
+function clearStore() {
+  localStorage.removeItem(STORE_KEY);
+}
+
+function normalize(s) {
+  return s.trim().toLowerCase().replace(/[.,!?;:'"()]/g,'').replace(/\s+/,' ');
+}
+function isClose(typed, correct) {
+  const t=normalize(typed), c=normalize(correct);
+  if(t===c) return 'exact';
+  const maxDist=Math.floor(c.length/8);
+  if(maxDist>0 && lev(t,c)<=maxDist) return 'close';
+  return 'wrong';
+}
+function lev(a,b) {
+  const m=a.length,n=b.length;
+  const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function pickDeck(store) {
+  const now = Date.now();
+  const DAY = 86400000;
+
+  // Score each card: lower = more urgent to show
+  // Never seen → score 0 (highest priority)
+  // Due for review → score 1
+  // Not due → score 100 + days until due
+  const scored = ALL.map(q => {
+    const s = store.cards[q.en];
+    if (!s) return { q, score: 0 };
+    const daysSince = (now - s.lastSeen) / DAY;
+    const due = daysSince >= s.interval;
+    if (due) return { q, score: 1 + (s.wrong / (s.seen || 1)) };
+    return { q, score: 100 + (s.interval - daysSince) };
+  });
+
+  // Sort: unseen/due first, then add some randomness within tiers
+  scored.sort((a,b) => {
+    const tierA = a.score < 2 ? 0 : a.score < 10 ? 1 : 2;
+    const tierB = b.score < 2 ? 0 : b.score < 10 ? 1 : 2;
+    if (tierA !== tierB) return tierA - tierB;
+    return Math.random() - 0.5;
+  });
+
+  return scored.slice(0, PER).map(({q}) => ({q, streak:0}));
+}
+
+function ins(ch) {
+  const el=document.getElementById('tinput');
+  const s=el.selectionStart, e=el.selectionEnd;
+  el.value=el.value.slice(0,s)+ch+el.value.slice(e);
+  el.selectionStart=el.selectionEnd=s+ch.length;
+  el.focus();
+}
+function handleKey(ev) {
+  if(ev.key==='Enter'){
+    if(!checked) checkAnswer();
+    else mark(lastCorrect);
+  }
+}
+
+let deck=[], cur=0, score=0, total=0, cats={}, checked=false, lastCorrect=false;
+let store = loadStore();
+
+function statusLine() {
+  const seen = Object.keys(store.cards).length;
+  const total_q = ALL.length;
+  return `${seen}/${total_q} cards seen`;
+}
+
+function render() {
+  checked=false; lastCorrect=false;
+  const card=deck[cur];
+  const q=card.q;
+  const s=store.cards[q.en];
+  const isReview = s && s.seen > 0;
+
+  document.getElementById('ctr').textContent=`${cur+1} / ${deck.length}`;
+  document.getElementById('cat').textContent=q.cat;
+  document.getElementById('en').textContent=q.en;
+  document.getElementById('de').textContent=q.de;
+  document.getElementById('note').innerHTML=q.note;
+  document.getElementById('srinfo').textContent=isReview
+    ? `↺ Review · seen ${s.seen}x · ${Math.round((s.correct/(s.seen||1))*100)}% correct`
+    : `✦ New · ${statusLine()}`;
+  document.getElementById('ans').className='answer-box';
+  document.getElementById('cfb').textContent='';
+  document.getElementById('cfb').className='check-fb';
+  const inp=document.getElementById('tinput');
+  inp.value=''; inp.className='type-input'; inp.disabled=false;
+  document.getElementById('bcheck').style.display='inline-block';
+  document.getElementById('bgot').style.display='none';
+  document.getElementById('bmis').style.display='none';
+  document.getElementById('prog').style.width=`${(cur/deck.length)*100}%`;
+  setTimeout(()=>inp.focus(),50);
+}
+
+function checkAnswer() {
+  const card=deck[cur]; const q=card.q;
+  const typed=document.getElementById('tinput').value;
+  if(!typed.trim()) return;
+  checked=true;
+  const result=isClose(typed, q.de);
+  const inp=document.getElementById('tinput');
+  const fb=document.getElementById('cfb');
+  inp.disabled=true;
+  document.getElementById('bcheck').style.display='none';
+  document.getElementById('ans').className='answer-box show';
+
+  if(result==='exact'||result==='close') {
+    inp.className='type-input ok';
+    fb.className='check-fb ok';
+    fb.textContent=result==='close'?'Close enough ✓ — check the exact wording':'Genau ✓';
+    document.getElementById('bgot').style.display='inline-block';
+    lastCorrect=true;
+  } else {
+    inp.className='type-input no';
+    fb.className='check-fb no';
+    fb.textContent='Not quite — see the answer above';
+    document.getElementById('bgot').style.display='inline-block';
+    document.getElementById('bmis').style.display='inline-block';
+    lastCorrect=false;
+  }
+}
+
+function mark(ok) {
+  const card=deck[cur];
+  const q=card.q;
+  const now=Date.now();
+
+  // Update store
+  if(!store.cards[q.en]) store.cards[q.en]={seen:0,correct:0,wrong:0,lastSeen:0,interval:1};
+  const s=store.cards[q.en];
+  s.seen++;
+  s.lastSeen=now;
+  if(ok) {
+    s.correct++;
+    // Spaced repetition: interval grows 1→2→4→7→14→30 days
+    const intervals=[1,2,4,7,14,30];
+    const idx=intervals.indexOf(s.interval);
+    s.interval=idx>=0&&idx<intervals.length-1?intervals[idx+1]:30;
+  } else {
+    s.wrong++;
+    s.interval=1; // reset — see again tomorrow
+    // Also re-insert in this session
+    deck.splice(cur,1);
+    const insertAt=Math.min(cur+2, deck.length);
+    deck.splice(insertAt,0,{q,streak:0});
+  }
+  saveStore(store);
+
+  // Category tracking
+  if(!cats[q.cat]) cats[q.cat]={c:0,t:0};
+  cats[q.cat].t++; total++;
+  if(ok){score++;cats[q.cat].c++;cur++;}
+
+  if(cur>=deck.length) showScore();
+  else render();
+}
+
+function skip() {
+  cur++;
+  if(cur>=deck.length) showScore();
+  else render();
+}
+
+function showScore() {
+  document.getElementById('quiz').style.display='none';
+  document.getElementById('scores').className='score-screen show';
+  document.getElementById('snum').textContent=`${score}/${total}`;
+  const seen=Object.keys(store.cards).length;
+  const weak=Object.entries(cats).filter(([_,d])=>d.c/d.t<0.7).map(([c])=>c);
+  document.getElementById('wnote').textContent=
+    `${seen}/${ALL.length} cards seen total. `+
+    (weak.length?`Weak: ${weak.join(', ')}.`:'Good across the board.');
+  const bd=document.getElementById('bdown');
+  bd.innerHTML='<div class="bd-hdr">By category</div>';
+  Object.entries(cats).forEach(([c,d])=>{
+    const p=Math.round(d.c/d.t*100);
+    bd.innerHTML+=`<div class="bd-row"><span>${c}</span><span>${d.c}/${d.t} · ${p}%</span></div>`;
+  });
+}
+
+function nextRound() {
+  if(activeCat) {
+    startCat(activeCat);
+  } else {
+    store=loadStore();
+    deck=pickDeck(store); cur=0; score=0; total=0; cats={};
+    document.getElementById('scores').className='score-screen';
+    document.getElementById('quiz').style.display='block';
+    render();
+  }
+}
+
+function restart() {
+  if(confirm('Reset all progress? This clears your history.')) { clearStore(); store=loadStore(); }
+  goHome();
+}
+
+let activeCat = null; // null = all
+
+function goHome() {
+  activeCat = null;
+  document.getElementById('scores').className = 'score-screen';
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('cat-select').style.display = 'block';
+  buildCatList();
+}
+
+function buildCatList() {
+  const cats = [...new Set(ALL.map(q => q.cat))];
+  const store = loadStore();
+  const el = document.getElementById('cat-list');
+  el.innerHTML = '';
+  cats.forEach(cat => {
+    const cards = ALL.filter(q => q.cat === cat);
+    const seen = cards.filter(q => store.cards[q.en]).length;
+    const pct = seen === 0 ? '' : `${seen}/${cards.length}`;
+    const btn = document.createElement('button');
+    btn.className = 'btn-more';
+    btn.style.cssText = 'width:100%;text-align:left;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;';
+    btn.innerHTML = `<span>${cat}</span><span style="color:#555;font-size:0.75rem;">${pct}</span>`;
+    btn.onclick = () => startCat(cat);
+    el.appendChild(btn);
+  });
+}
+
+function startCat(cat) {
+  activeCat = cat;
+  document.getElementById('cat-select').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  document.getElementById('quiz-subtitle').textContent = cat;
+  const pool = ALL.filter(q => q.cat === cat);
+  deck = pool.map(q => ({q, streak:0})).sort(() => Math.random() - 0.5);
+  cur = 0; score = 0; total = 0; cats = {};
+  render();
+}
+
+function startAll() {
+  activeCat = null;
+  document.getElementById('cat-select').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  document.getElementById('quiz-subtitle').textContent = 'B1 · Hamburg';
+  store = loadStore();
+  deck = pickDeck(store);
+  cur = 0; score = 0; total = 0; cats = {};
+  render();
+}
+
+store=loadStore(); buildCatList();
+</script>
+</body>
+</html>
