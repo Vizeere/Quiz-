@@ -1,10 +1,14 @@
 {
-  // German quiz — static page, no build step.
+  // German quiz — static page plus one small API route (/api/explain) that asks Claude.
   // Cloudflare Workers Builds: build command empty, deploy command `npx wrangler deploy`.
+  // Secret needed for "Ask Claude": ANTHROPIC_API_KEY (Worker → Settings → Variables and Secrets).
   "name": "quiz",
+  "main": "src/worker.js",
   "workers_dev": true,
   "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "binding": "ASSETS"
   }
 }

@@ -70,6 +70,12 @@
   .btn-check:hover { border-color: #b8860b; color: #b8860b; }
   .btn-skip { background: transparent; border: 1px solid #1e1e1e; color: #3a3a3a; font-size: 0.72rem; padding: 8px 14px; }
   .btn-skip:hover { color: #555; border-color: #2a2a2a; }
+  .btn-why { background: transparent; border: 1px solid #b8860b; color: #b8860b; display: none; }
+  .btn-why:hover { background: #b8860b; color: #1a1a1a; }
+  .btn-why:disabled { opacity: 0.5; cursor: default; background: transparent; color: #b8860b; }
+  .why-box { display: none; font-size: 0.85rem; color: #c8c0b0; line-height: 1.65; background: #1e1e1e; border: 1px solid #2a2a2a; border-left: 2px solid #b8860b; border-radius: 2px; padding: 14px 16px; margin-bottom: 16px; white-space: pre-wrap; }
+  .why-box.show { display: block; }
+  .why-box.muted { color: #666; font-style: italic; }
   .sr-info { font-size: 0.6rem; color: #3a3a3a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
 </style>
 </head>
@@ -108,10 +114,12 @@
       <div class="german" id="de"></div>
       <div class="note" id="note"></div>
     </div>
+    <div class="why-box" id="why" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn-check" id="bcheck" onclick="checkAnswer()">Check ↵</button>
       <button class="btn-got" id="bgot" onclick="mark(true)">Got it ✓</button>
       <button class="btn-miss" id="bmis" onclick="mark(false)">Try again ↺</button>
+      <button class="btn-why" id="bwhy" onclick="askWhy()">Why? Ask Claude</button>
       <button class="btn-skip" onclick="skip()">Skip</button>
       <button class="btn-skip" onclick="goHome()">← Categories</button>
     </div>
@@ -631,6 +639,11 @@ function render() {
   document.getElementById('bcheck').style.display='inline-block';
   document.getElementById('bgot').style.display='none';
   document.getElementById('bmis').style.display='none';
+  whyReq++;
+  document.getElementById('bwhy').style.display='none';
+  document.getElementById('bwhy').disabled=false;
+  document.getElementById('why').className='why-box';
+  document.getElementById('why').textContent='';
   document.getElementById('prog').style.width=`${(cur/deck.length)*100}%`;
   setTimeout(()=>inp.focus(),50);
 }
@@ -647,6 +660,8 @@ function checkAnswer() {
   document.getElementById('bcheck').style.display='none';
   document.getElementById('ans').className='answer-box show';
 
+  lastTyped=typed;
+  document.getElementById('bwhy').style.display = result==='exact' ? 'none' : 'inline-block';
   if(result==='exact'||result==='close') {
     inp.className='type-input ok';
     fb.className='check-fb ok';
@@ -661,6 +676,38 @@ function checkAnswer() {
     document.getElementById('bmis').style.display='inline-block';
     lastCorrect=false;
   }
+}
+
+// "Why? Ask Claude" — the worker at /api/explain asks Claude to explain the mistake.
+let whyReq=0, lastTyped='';
+async function askWhy() {
+  const q=deck[cur].q;
+  const btn=document.getElementById('bwhy');
+  const box=document.getElementById('why');
+  const req=++whyReq;
+  btn.disabled=true;
+  box.className='why-box show muted';
+  box.textContent='Asking Claude…';
+  let msg, ok=false;
+  try {
+    const res=await fetch('/api/explain',{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({english:q.en, expected:q.de, note:q.note, typed:lastTyped})
+    });
+    const data=await res.json().catch(()=>({}));
+    if(res.ok && data.explanation) { msg=data.explanation; ok=true; }
+    else if(data.error==='not_configured') msg="Ask Claude isn't set up yet — add an ANTHROPIC_API_KEY secret to the quiz worker in Cloudflare.";
+    else if(data.error==='bad_key') msg="Claude rejected the API key — check the ANTHROPIC_API_KEY secret in Cloudflare.";
+    else if(data.error==='rate_limited') msg="Too many questions at once — try again in a moment.";
+    else msg="Couldn't get an explanation right now. Try again in a moment.";
+  } catch(e) {
+    msg="Couldn't reach Claude — are you online?";
+  }
+  if(req!==whyReq) return; // moved on to another card
+  box.className='why-box show'+(ok?'':' muted');
+  box.textContent=msg;
+  btn.disabled=false;
 }
 
 function mark(ok) {
