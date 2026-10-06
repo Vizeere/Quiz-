@@ -105,6 +105,17 @@
   .lv-chart svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
   .lv-tip { position: absolute; pointer-events: none; background: #252525; border: 1px solid #333; border-radius: 2px; padding: 8px 10px; font-size: 0.75rem; color: #e8e0d0; line-height: 1.5; white-space: nowrap; display: none; transform: translate(-50%, -100%); }
   .lv-tip .muted { color: #888; }
+  /* Phones: finger-sized buttons, and no hover colour stuck on after a tap. */
+  @media (hover: none) {
+    button { min-height: 44px; }
+    .umlaut-btn { min-width: 40px; }
+    .btn-why:hover, .btn-more:hover { background: transparent; color: #b8860b; }
+    .btn-reveal:hover { border-color: #333; color: #666; }
+    .btn-check:hover { border-color: #333; color: #777; }
+    .btn-skip:hover { color: #3a3a3a; border-color: #1e1e1e; }
+    .btn-again:hover { background: #b8860b; }
+    .mc-btn:hover:not(:disabled) { border-color: #2a2a2a; color: #e8e0d0; }
+  }
   .sr-info { font-size: 0.6rem; color: #3a3a3a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
   .level-badge { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; font-weight: bold; }
   .lvl-a1 { background:#2a2a1a; color:#a09040; border:1px solid #3a3a20; }
@@ -126,12 +137,13 @@
   <div id="cat-select" style="display:block;">
     <h1>Deutsch</h1>
     <div class="subtitle">Choose a category</div>
-    <div id="cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
     <button class="btn-again" onclick="startAll()" style="width:100%;padding:14px;">All Categories (Mixed)</button>
-    <div style="display:flex;gap:10px;margin-top:10px;">
+    <div style="display:flex;gap:10px;margin-top:10px;margin-bottom:28px;">
       <button class="btn-more" onclick="showLevel()" style="flex:1;padding:12px;" id="lv-home-btn">My level</button>
       <button class="btn-more" onclick="showMistakes()" style="flex:1;padding:12px;" id="mk-home-btn">My mistakes</button>
     </div>
+    <div class="bd-hdr">Or practise one topic</div>
+    <div id="cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
   </div>
 
   <div id="quiz" style="display:none;">
