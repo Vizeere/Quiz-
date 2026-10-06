@@ -736,7 +736,7 @@ function render() {
   document.getElementById('cat').textContent=q.cat;
   document.getElementById('en').textContent=q.en;
   const lvlEl=document.getElementById('lvl');
-  const catLevels={'war/wurde/würde':'B1','Word Order':'B1','Separable Verbs':'A2','Reflexive Verbs':'B1','Reflexive Pronouns':'B1','mich/mir·dich/dir':'B1','Tricky Words':'B1','der/die/das':'A2','Prepositions':'B1','wird/werden':'B1','werde/würde/hätte/wäre':'B2','Pub German':'B1','Hamburg Life':'B1','Casual German':'B1','Real Situations':'B1','Vocabulary':'A2','AMK Style':'B2','German Humour':'B2','Grammar':'B1','Cases':'B1'};
+  const catLevels={'war/wurde/würde':'B1','Word Order':'B1','Separable Verbs':'A2','Reflexive Verbs':'B1','Reflexive Pronouns':'B1','mich/mir · dich/dir':'B1','Tricky Words':'B1','der/die/das':'A2','Prepositions':'B1','wird/werden':'B1','werde/würde/hätte/wäre':'B2','Pub German':'B1','Hamburg Life':'B1','Casual German':'B1','Real Situations':'B1','Vocabulary':'A2','AMK Style':'B2','German Humour':'B2','Grammar':'B1','Cases':'B1'};
   const lvl = q.lvl || catLevels[q.cat] || null;
   if(lvl){
     const cls={'A1':'lvl-a1','A2':'lvl-a2','B1':'lvl-b1','B2':'lvl-b2','C1':'lvl-c1'}[lvl]||'lvl-b1';
