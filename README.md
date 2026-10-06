@@ -5,6 +5,20 @@ progress is saved in the browser (localStorage).
 
 Deployed as the Cloudflare Worker `quiz` — every push to `main` redeploys it.
 
+## Levels and "My level"
+
+Every question has its own CEFR level (`lvl:` in `public/index.html`), graded
+sentence by sentence against the usual Goethe-Institut grammar lists — e.g.
+accusative articles A1, dative/two-way prepositions and weil/dass A2, passive and
+Präteritum B1, Konjunktiv II past and passive with modals B2, idioms/slang B2–C1.
+They're a judgement call; change any `lvl` you disagree with.
+
+**My level** logs each first check of a question (by the automatic check, not the
+Got it button; retries within 30 min don't count). A level counts as mastered at
+75%+ right over the last 4 weeks with at least 10 answers, and your level is the
+highest one with every level below it mastered too. The chart shows that estimate
+week by week.
+
 ## My mistakes
 
 Every answer that isn't exactly right is logged on the device (localStorage,
