@@ -88,6 +88,18 @@
   .btn-clear { background: transparent; border: 1px solid #2a2a2a; color: #555; font-size: 0.72rem; padding: 8px 14px; }
   .btn-clear:hover { color: #c07070; border-color: #6b3a3a; }
   .sr-info { font-size: 0.6rem; color: #3a3a3a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .level-badge { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; font-weight: bold; }
+  .lvl-a1 { background:#2a2a1a; color:#a09040; border:1px solid #3a3a20; }
+  .lvl-a2 { background:#1a2a1a; color:#60a060; border:1px solid #203a20; }
+  .lvl-b1 { background:#1a1f2e; color:#6080c0; border:1px solid #20284a; }
+  .lvl-b2 { background:#1e1a2e; color:#8060c0; border:1px solid #2a2040; }
+  .lvl-c1 { background:#2e1a1a; color:#c06060; border:1px solid #4a2020; }
+  .mc-options { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .mc-btn { background: #1e1e1e; border: 1px solid #2a2a2a; color: #e8e0d0; font-family: 'Georgia', serif; font-size: 1.1rem; padding: 14px 28px; border-radius: 2px; cursor: pointer; transition: all 0.15s; flex: 1; min-width: 70px; }
+  .mc-btn:hover:not(:disabled) { border-color: #b8860b; color: #b8860b; }
+  .mc-btn.mc-correct { border-color: #3a6b3e; background: #1a2e1c; color: #6ec074; }
+  .mc-btn.mc-wrong { border-color: #6b3a3a; background: #2a1a1a; color: #c07070; }
+  .mc-btn:disabled { cursor: default; }
 </style>
 </head>
 <body>
@@ -107,7 +119,10 @@
     <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
     <div class="meta">
       <div class="q-counter" id="ctr"></div>
-      <div class="category-tag" id="cat"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="level-badge" id="lvl"></div>
+        <div class="category-tag" id="cat"></div>
+      </div>
     </div>
     <div class="english" id="en"></div>
     <div class="sr-info" id="srinfo"></div>
@@ -120,6 +135,7 @@
       <button class="umlaut-btn" onclick="ins('Ü')">Ü</button>
       <button class="umlaut-btn" onclick="ins('ß')">ß</button>
     </div>
+    <div class="mc-options" id="mc-options" style="display:none;"></div>
     <input class="type-input" id="tinput" type="text" placeholder="Type in German…" autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="handleKey(event)">
     <div class="check-fb" id="cfb"></div>
     <div class="answer-box" id="ans">
@@ -556,6 +572,71 @@ const ALL = [
   {cat:"Casual German",en:"I thought I could do it myself.",de:"Ich dachte ich kann es selbst machen.",note:"<strong>Dachte</strong> = thought (simple past of denken). Selbst = myself. No dass needed in casual speech."},
   {cat:"Casual German",en:"Because I won't be here.",de:"Weil ich nicht hier sein werde.",note:"<strong>Weil</strong> clause: verb to end — sein werde. Werde = will (future). Weil ich nicht hier sein <strong>werde</strong>."},
   {cat:"Casual German",en:"I would have just stayed here because of that.",de:"Ich wäre einfach hier geblieben wegen dem.",note:"<strong>Wäre geblieben</strong> = would have stayed. Wegen dem = because of that (casual dative)."},
+  {cat:"Pub German",en:"I can't force you to do it.",de:"Ich kann dich nicht dazu zwingen.",note:"<strong>Zwingen</strong> = to force. Dazu = to do it/to that. Dich = you (accusative, direct object)."},
+  {cat:"Pub German",en:"The consequences are on me.",de:"Die Konsequenzen liegen bei mir.",note:"<strong>Liegen bei</strong> = to lie with / be on. Bei mir = on me / with me. Plural subject → liegen."},
+  {cat:"Pub German",en:"If you want to be rude, you can leave.",de:"Wenn ihr unhöflich sein wollt, könnt ihr gehen.",note:"<strong>Wollt</strong> = present plural (you guys want). Unhöflich = rude. Könnt ihr gehen = you can leave."},
+  {cat:"Pub German",en:"Don't talk to my staff like that.",de:"Rede nicht so mit meinem Personal.",note:"<strong>Meinem Personal</strong> — das Personal is neuter, so dative is meinem. Rede nicht so = don't talk like that."},
+  {cat:"Pub German",en:"You're making her uncomfortable.",de:"Ihr macht ihr unwohl.",note:"<strong>Unwohl</strong> = uncomfortable (emotional). First ihr = you guys (plural). Second ihr = her (dative). Machen + dative person = makes someone feel."},
+  {cat:"Pub German",en:"She's only trying to do her job.",de:"Sie will nur ihre Arbeit machen.",note:"<strong>Will</strong> = wants/is trying to (modal). Nur = only. Ihre Arbeit = her job (feminine accusative)."},
+  {cat:"Hamburg Life",en:"I didn't plan on staying.",de:"Ich hatte nicht vor zu bleiben.",note:"<strong>Vorhaben</strong> = to plan/intend (separable). Hatte vor = had planned (past). Zu + infinitive after vorhaben."},
+  {cat:"Hamburg Life",en:"But then opportunities came up and I stayed.",de:"Aber dann kamen Möglichkeiten auf und ich bin geblieben.",note:"<strong>Aufkommen</strong> = to come up/arise. Kamen auf = arose (past). Bin geblieben = stayed (perfect)."},
+  {cat:"Hamburg Life",en:"In the meantime I'm full time.",de:"Mittlerweile bin ich Vollzeit.",note:"<strong>Mittlerweile</strong> = in the meantime / by now. Vollzeit = full time. Great word for showing how things evolved."},
+  {cat:"Hamburg Life",en:"By now I know my way around.",de:"Mittlerweile kenn ich mich aus.",note:"<strong>Sich auskennen</strong> = to know one's way around (reflexive separable). Mittlerweile = by now. Kenn = casual drop of the e."},
+  {cat:"Hamburg Life",en:"Mittlerweile it's become normal for me.",de:"Mittlerweile ist es normal für mich geworden.",note:"<strong>Geworden</strong> = become (past of werden). Für mich = for me. Mittlerweile shows change over time."},
+
+  // ── CASES: der/die/das ───────────────────────────────────────
+  // Nominative (subject)
+  {cat:"Cases",lvl:"A2",en:"___ Tisch ist kaputt. (The table is broken.)",de:"Der",mc:["Der","Die","Das"],note:"<strong>Der Tisch</strong> — masculine. Nominative (subject): der."},
+  {cat:"Cases",lvl:"A2",en:"___ Tür ist offen. (The door is open.)",de:"Die",mc:["Der","Die","Das"],note:"<strong>Die Tür</strong> — feminine. Nominative: die."},
+  {cat:"Cases",lvl:"A2",en:"___ Fenster ist zu. (The window is closed.)",de:"Das",mc:["Der","Die","Das"],note:"<strong>Das Fenster</strong> — neuter. Nominative: das."},
+  {cat:"Cases",lvl:"A2",en:"___ Mann wartet draußen. (The man is waiting outside.)",de:"Der",mc:["Der","Die","Das"],note:"<strong>Der Mann</strong> — masculine. Nominative: der."},
+  {cat:"Cases",lvl:"A2",en:"___ Frau hat angerufen. (The woman called.)",de:"Die",mc:["Der","Die","Das"],note:"<strong>Die Frau</strong> — feminine. Nominative: die."},
+  {cat:"Cases",lvl:"A2",en:"___ Kind schläft. (The child is sleeping.)",de:"Das",mc:["Der","Die","Das"],note:"<strong>Das Kind</strong> — neuter. Nominative: das."},
+  {cat:"Cases",lvl:"A2",en:"___ Hund bellt. (The dog is barking.)",de:"Der",mc:["Der","Die","Das"],note:"<strong>Der Hund</strong> — masculine. Nominative: der."},
+  {cat:"Cases",lvl:"A2",en:"___ Flasche ist leer. (The bottle is empty.)",de:"Die",mc:["Der","Die","Das"],note:"<strong>Die Flasche</strong> — feminine. Nominative: die."},
+  {cat:"Cases",lvl:"A2",en:"___ Bier ist kalt. (The beer is cold.)",de:"Das",mc:["Der","Die","Das"],note:"<strong>Das Bier</strong> — neuter. Nominative: das."},
+  {cat:"Cases",lvl:"A2",en:"___ Schlüssel liegt auf dem Tisch. (The key is on the table.)",de:"Der",mc:["Der","Die","Das"],note:"<strong>Der Schlüssel</strong> — masculine. Nominative: der."},
+  {cat:"Cases",lvl:"A2",en:"___ Küche riecht gut. (The kitchen smells good.)",de:"Die",mc:["Der","Die","Das"],note:"<strong>Die Küche</strong> — feminine. Nominative: die."},
+  {cat:"Cases",lvl:"A2",en:"___ Geld ist alle. (The money is all gone.)",de:"Das",mc:["Der","Die","Das"],note:"<strong>Das Geld</strong> — neuter. Nominative: das."},
+  {cat:"Cases",lvl:"A2",en:"___ Wein kommt aus Frankreich. (The wine is from France.)",de:"Der",mc:["Der","Die","Das"],note:"<strong>Der Wein</strong> — masculine. Nominative: der."},
+  {cat:"Cases",lvl:"A2",en:"___ Musik ist zu laut. (The music is too loud.)",de:"Die",mc:["Der","Die","Das"],note:"<strong>Die Musik</strong> — feminine. Nominative: die."},
+  {cat:"Cases",lvl:"A2",en:"___ Essen ist fertig. (The food is ready.)",de:"Das",mc:["Der","Die","Das"],note:"<strong>Das Essen</strong> — neuter. Nominative: das."},
+  {cat:"Cases",lvl:"A2",en:"___ Zug fährt ab. (The train is departing.)",de:"Der",mc:["Der","Die","Das"],note:"<strong>Der Zug</strong> — masculine. Nominative: der."},
+  {cat:"Cases",lvl:"A2",en:"___ Stadt ist groß. (The city is big.)",de:"Die",mc:["Der","Die","Das"],note:"<strong>Die Stadt</strong> — feminine. Nominative: die."},
+  {cat:"Cases",lvl:"A2",en:"___ Auto ist neu. (The car is new.)",de:"Das",mc:["Der","Die","Das"],note:"<strong>Das Auto</strong> — neuter. Nominative: das."},
+  // Accusative (direct object)
+  {cat:"Cases",lvl:"B1",en:"Ich brauche ___ Schlüssel. (I need the key.)",de:"den",mc:["den","die","das"],note:"<strong>Der Schlüssel</strong> → accusative: <strong>den</strong>. Masculine changes der→den."},
+  {cat:"Cases",lvl:"B1",en:"Ich öffne ___ Tür. (I'm opening the door.)",de:"die",mc:["den","die","das"],note:"<strong>Die Tür</strong> → accusative: <strong>die</strong>. Feminine stays die."},
+  {cat:"Cases",lvl:"B1",en:"Ich nehme ___ Bier. (I'll take the beer.)",de:"das",mc:["den","die","das"],note:"<strong>Das Bier</strong> → accusative: <strong>das</strong>. Neuter stays das."},
+  {cat:"Cases",lvl:"B1",en:"Ich rufe ___ Mann an. (I'm calling the man.)",de:"den",mc:["den","die","das"],note:"<strong>Der Mann</strong> → accusative: <strong>den</strong>. Masculine der→den."},
+  {cat:"Cases",lvl:"B1",en:"Ich kenne ___ Frau. (I know the woman.)",de:"die",mc:["den","die","das"],note:"<strong>Die Frau</strong> → accusative: <strong>die</strong>. Feminine stays die."},
+  {cat:"Cases",lvl:"B1",en:"Ich bestelle ___ Wein. (I'm ordering the wine.)",de:"den",mc:["den","die","das"],note:"<strong>Der Wein</strong> → accusative: <strong>den</strong>. Masculine der→den."},
+  {cat:"Cases",lvl:"B1",en:"Ich schließe ___ Fenster. (I'm closing the window.)",de:"das",mc:["den","die","das"],note:"<strong>Das Fenster</strong> → accusative: <strong>das</strong>. Neuter stays das."},
+  {cat:"Cases",lvl:"B1",en:"Ich mag ___ Hund. (I like the dog.)",de:"den",mc:["den","die","das"],note:"<strong>Der Hund</strong> → accusative: <strong>den</strong>. Masculine der→den."},
+  {cat:"Cases",lvl:"B1",en:"Ich höre ___ Musik. (I can hear the music.)",de:"die",mc:["den","die","das"],note:"<strong>Die Musik</strong> → accusative: <strong>die</strong>. Feminine stays die."},
+  {cat:"Cases",lvl:"B1",en:"Ich esse ___ Essen. (I'm eating the food.)",de:"das",mc:["den","die","das"],note:"<strong>Das Essen</strong> → accusative: <strong>das</strong>. Neuter stays das."},
+  {cat:"Cases",lvl:"B1",en:"Ich nehme ___ Zug. (I'm taking the train.)",de:"den",mc:["den","die","das"],note:"<strong>Der Zug</strong> → accusative: <strong>den</strong>. Masculine der→den."},
+  {cat:"Cases",lvl:"B1",en:"Ich kenne ___ Stadt gut. (I know the city well.)",de:"die",mc:["den","die","das"],note:"<strong>Die Stadt</strong> → accusative: <strong>die</strong>. Feminine stays die."},
+  {cat:"Cases",lvl:"B1",en:"Ich parke ___ Auto dort. (I'm parking the car there.)",de:"das",mc:["den","die","das"],note:"<strong>Das Auto</strong> → accusative: <strong>das</strong>. Neuter stays das."},
+  {cat:"Cases",lvl:"B1",en:"Kannst du ___ Tisch schieben? (Can you move the table?)",de:"den",mc:["den","die","das"],note:"<strong>Der Tisch</strong> → accusative: <strong>den</strong>. Masculine der→den."},
+  {cat:"Cases",lvl:"B1",en:"Mach ___ Flasche auf. (Open the bottle.)",de:"die",mc:["den","die","das"],note:"<strong>Die Flasche</strong> → accusative: <strong>die</strong>. Feminine stays die."},
+  // Dative (after an/in/auf/mit/bei/von/zu/nach etc.)
+  {cat:"Cases",lvl:"B1",en:"Ich stehe an ___ Tür. (I'm standing at the door.)",de:"der",mc:["dem","der","das"],note:"<strong>Die Tür</strong> → dative: <strong>der</strong>. Feminine changes die→der."},
+  {cat:"Cases",lvl:"B1",en:"Das Buch liegt auf ___ Tisch. (The book is on the table.)",de:"dem",mc:["dem","der","den"],note:"<strong>Der Tisch</strong> → dative: <strong>dem</strong>. Masculine changes der→dem."},
+  {cat:"Cases",lvl:"B1",en:"Das Glas steht auf ___ Fenster. (The glass is on the windowsill.)",de:"dem",mc:["dem","der","den"],note:"<strong>Das Fenster</strong> → dative: <strong>dem</strong>. Neuter changes das→dem."},
+  {cat:"Cases",lvl:"B1",en:"Ich fahre mit ___ Zug. (I'm going by train.)",de:"dem",mc:["dem","der","den"],note:"<strong>Der Zug</strong> → dative after mit: <strong>dem</strong>. Masculine der→dem."},
+  {cat:"Cases",lvl:"B1",en:"Sie kommt aus ___ Küche. (She's coming from the kitchen.)",de:"der",mc:["dem","der","das"],note:"<strong>Die Küche</strong> → dative after aus: <strong>der</strong>. Feminine die→der."},
+  {cat:"Cases",lvl:"B1",en:"Er sitzt in ___ Auto. (He's sitting in the car.)",de:"dem",mc:["dem","der","den"],note:"<strong>Das Auto</strong> → dative after in (location): <strong>dem</strong>. Neuter das→dem."},
+  {cat:"Cases",lvl:"B1",en:"Wir sprechen über ___ Musik. (We're talking about the music.)",de:"der",mc:["dem","der","das"],note:"<strong>Die Musik</strong> → dative after über (when not motion): <strong>der</strong>. Feminine die→der."},
+  {cat:"Cases",lvl:"B1",en:"Der Hund liegt neben ___ Tür. (The dog is lying next to the door.)",de:"der",mc:["dem","der","das"],note:"<strong>Die Tür</strong> → dative after neben (location): <strong>der</strong>. Feminine die→der."},
+  {cat:"Cases",lvl:"B1",en:"Ich wohne bei ___ Mann um die Ecke. (I live with the man around the corner.)",de:"dem",mc:["dem","der","den"],note:"<strong>Der Mann</strong> → dative after bei: <strong>dem</strong>. Masculine der→dem."},
+  {cat:"Cases",lvl:"B1",en:"Das Kind spielt mit ___ Hund. (The child is playing with the dog.)",de:"dem",mc:["dem","der","den"],note:"<strong>Der Hund</strong> → dative after mit: <strong>dem</strong>. Masculine der→dem."},
+  {cat:"Cases",lvl:"B2",en:"Ich gehe zu ___ Frau an der Bar. (I'm going to the woman at the bar.)",de:"der",mc:["dem","der","das"],note:"<strong>Die Frau</strong> → dative after zu: <strong>der</strong>. Feminine die→der."},
+  {cat:"Cases",lvl:"B2",en:"Er steht vor ___ Fenster. (He's standing in front of the window.)",de:"dem",mc:["dem","der","den"],note:"<strong>Das Fenster</strong> → dative after vor (location): <strong>dem</strong>. Neuter das→dem."},
+  // Mixed / tricky
+  {cat:"Cases",lvl:"B1",en:"Ich stelle ___ Flasche auf ___ Tisch. (I'm putting the bottle on the table.) — first gap",de:"die",mc:["den","die","das"],note:"<strong>Die Flasche</strong> → accusative (direct object): <strong>die</strong>. Flasche is feminine."},
+  {cat:"Cases",lvl:"B1",en:"Ich stelle die Flasche auf ___ Tisch. (I'm putting the bottle on the table.) — second gap",de:"den",mc:["dem","den","das"],note:"<strong>Der Tisch</strong> → accusative after auf (motion onto): <strong>den</strong>. auf + motion = accusative."},
+  {cat:"Cases",lvl:"B2",en:"Das Glas steht auf ___ Tisch. (The glass is on the table.) — location, not motion",de:"dem",mc:["dem","den","das"],note:"<strong>Der Tisch</strong> → dative after auf (location, not moving): <strong>dem</strong>. Key rule: location = dative, motion = accusative."},
 ];
 
 const PER = 15;
@@ -654,6 +735,13 @@ function render() {
   document.getElementById('ctr').textContent=`${cur+1} / ${deck.length}`;
   document.getElementById('cat').textContent=q.cat;
   document.getElementById('en').textContent=q.en;
+  const lvlEl=document.getElementById('lvl');
+  const catLevels={'war/wurde/würde':'B1','Word Order':'B1','Separable Verbs':'A2','Reflexive Verbs':'B1','Reflexive Pronouns':'B1','mich/mir·dich/dir':'B1','Tricky Words':'B1','der/die/das':'A2','Prepositions':'B1','wird/werden':'B1','werde/würde/hätte/wäre':'B2','Pub German':'B1','Hamburg Life':'B1','Casual German':'B1','Real Situations':'B1','Vocabulary':'A2','AMK Style':'B2','German Humour':'B2','Grammar':'B1','Cases':'B1'};
+  const lvl = q.lvl || catLevels[q.cat] || null;
+  if(lvl){
+    const cls={'A1':'lvl-a1','A2':'lvl-a2','B1':'lvl-b1','B2':'lvl-b2','C1':'lvl-c1'}[lvl]||'lvl-b1';
+    lvlEl.textContent=lvl; lvlEl.className='level-badge '+cls; lvlEl.style.display='inline-block';
+  } else { lvlEl.style.display='none'; }
   document.getElementById('de').textContent=q.de;
   document.getElementById('note').innerHTML=q.note;
   document.getElementById('srinfo').textContent=isReview
@@ -662,9 +750,6 @@ function render() {
   document.getElementById('ans').className='answer-box';
   document.getElementById('cfb').textContent='';
   document.getElementById('cfb').className='check-fb';
-  const inp=document.getElementById('tinput');
-  inp.value=''; inp.className='type-input'; inp.disabled=false;
-  document.getElementById('bcheck').style.display='inline-block';
   document.getElementById('bgot').style.display='none';
   document.getElementById('bmis').style.display='none';
   whyReq++;
@@ -673,7 +758,58 @@ function render() {
   document.getElementById('why').className='why-box';
   document.getElementById('why').textContent='';
   document.getElementById('prog').style.width=`${(cur/deck.length)*100}%`;
-  setTimeout(()=>inp.focus(),50);
+
+  const mcDiv = document.getElementById('mc-options');
+  const inp = document.getElementById('tinput');
+  const umlautBar = document.querySelector('.umlaut-bar');
+
+  if(q.mc) {
+    // Multiple choice mode
+    mcDiv.style.display='flex';
+    inp.style.display='none';
+    umlautBar.style.display='none';
+    document.getElementById('bcheck').style.display='none';
+    mcDiv.innerHTML='';
+    // Shuffle options
+    const opts = [...q.mc].sort(()=>Math.random()-0.5);
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className='mc-btn';
+      btn.textContent=opt;
+      btn.onclick=()=>checkMC(opt, q.de, btn);
+      mcDiv.appendChild(btn);
+    });
+  } else {
+    // Typed mode
+    mcDiv.style.display='none';
+    inp.style.display='block';
+    umlautBar.style.display='flex';
+    inp.value=''; inp.className='type-input'; inp.disabled=false;
+    document.getElementById('bcheck').style.display='inline-block';
+    setTimeout(()=>inp.focus(),50);
+  }
+}
+
+function checkMC(chosen, correct, btn) {
+  if(checked) return;
+  checked=true;
+  const isCorrect = chosen===correct;
+  lastCorrect=isCorrect;
+  // Disable all buttons and colour them
+  document.querySelectorAll('.mc-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===correct) b.className='mc-btn mc-correct';
+    else if(b===btn && !isCorrect) b.className='mc-btn mc-wrong';
+  });
+  const fb=document.getElementById('cfb');
+  fb.className=isCorrect?'check-fb ok':'check-fb no';
+  fb.textContent=isCorrect?'Genau ✓':'Not quite — correct answer highlighted';
+  document.getElementById('ans').className='answer-box show';
+  document.getElementById('bgot').style.display='inline-block';
+  if(!isCorrect) document.getElementById('bmis').style.display='inline-block';
+  lastTyped=chosen;
+  if(!isCorrect) logMistake(deck[cur].q, chosen, 'wrong');
+  document.getElementById('bwhy').style.display = isCorrect ? 'none' : 'inline-block';
 }
 
 function checkAnswer() {
@@ -739,7 +875,8 @@ function wordDiff(typed, expected) {
   const L = Array.from({length: m+1}, () => new Array(n+1).fill(0));
   for (let i = m-1; i >= 0; i--) for (let j = n-1; j >= 0; j--)
     L[i][j] = a[i] === b[j] ? L[i+1][j+1] + 1 : Math.max(L[i+1][j], L[i][j+1]);
-  if (n === 0 || L[0][0] < n / 2) return null;
+  // (One-word answers, like the multiple-choice ones, always count as a swap.)
+  if (n === 0 || (n > 1 && L[0][0] < n / 2)) return null;
 
   // Walk the LCS, grouping the non-matching stretches into hunks.
   const hunks = []; let h = {extra: [], missed: []};

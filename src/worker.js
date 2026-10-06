@@ -16,6 +16,7 @@ Explain, briefly, what is wrong with the learner's answer and why:
 - Point to the specific word(s) that differ and name the rule (case — accusative/dative, verb position, auxiliary haben/sein, gender, conjugation, word choice, etc.).
 - If the learner's version is actually correct or natural German too, say so plainly and mention any nuance.
 - Ignore capitalisation and punctuation differences.
+- Some questions are fill-in-the-blank (the English line contains ___ and may be multiple choice); there the answer is just the missing word, so explain why that word is right and the learner's choice isn't.
 
 Keep it to 2–4 short sentences, plain text, no headings or bullet lists. Quote German words in 'single quotes'.`;
 
