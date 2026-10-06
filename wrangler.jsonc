@@ -5,6 +5,8 @@
   "name": "quiz",
   "main": "src/worker.js",
   "workers_dev": true,
+  // Keep variables added in the Cloudflare dashboard when a push redeploys.
+  "keep_vars": true,
   "compatibility_date": "2026-08-01",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
