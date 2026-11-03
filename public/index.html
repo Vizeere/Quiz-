@@ -105,6 +105,24 @@
   .lv-chart svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
   .lv-tip { position: absolute; pointer-events: none; background: #252525; border: 1px solid #333; border-radius: 2px; padding: 8px 10px; font-size: 0.75rem; color: #e8e0d0; line-height: 1.5; white-space: nowrap; display: none; transform: translate(-50%, -100%); }
   .lv-tip .muted { color: #888; }
+  .cs-overlay { display: none; position: fixed; inset: 0; background: #1a1a1a; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 10; padding: 24px 20px 40px; }
+  .cs-overlay.show { display: block; }
+  .cs-inner { max-width: 580px; margin: 0 auto; }
+  .cs-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+  .cs-close { background: transparent; border: 1px solid #333; color: #aaa; padding: 8px 14px; font-size: 0.8rem; }
+  .cs-sec { margin-bottom: 28px; }
+  .cs-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .cs-table th { font-weight: normal; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: #666; text-align: left; padding: 6px 4px; border-bottom: 1px solid #2a2a2a; }
+  .cs-table td { padding: 9px 4px; border-bottom: 1px solid #1f1f1f; color: #aaa; }
+  .cs-table td:first-child { color: #777; font-size: 0.75rem; }
+  .cs-table .chg { color: #b8860b; font-weight: bold; }
+  .cs-p { font-size: 0.85rem; color: #aaa; line-height: 1.65; margin-bottom: 10px; }
+  .cs-p strong { color: #e8e0d0; font-weight: normal; }
+  .cs-p em { color: #b8860b; font-style: normal; }
+  .cs-ex { font-size: 0.8rem; color: #777; line-height: 1.6; padding-left: 12px; border-left: 2px solid #2a2a2a; margin: 4px 0 12px; }
+  .cs-tip { font-size: 0.82rem; color: #c8c0b0; line-height: 1.65; background: #1e1e1e; border-left: 2px solid #b8860b; padding: 12px 14px; margin-bottom: 10px; }
+  .cs-jump { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .cs-jump a { font-size: 0.75rem; color: #b8860b; border: 1px solid #333; padding: 8px 12px; text-decoration: none; border-radius: 2px; }
   /* Phones: finger-sized buttons, and no hover colour stuck on after a tap. */
   @media (hover: none) {
     button { min-height: 44px; }
@@ -138,10 +156,11 @@
     <h1>Deutsch</h1>
     <div class="subtitle">Choose a category</div>
     <button class="btn-again" onclick="startAll()" style="width:100%;padding:14px;">All Categories (Mixed)</button>
-    <div style="display:flex;gap:10px;margin-top:10px;margin-bottom:28px;">
+    <div style="display:flex;gap:10px;margin-top:10px;">
       <button class="btn-more" onclick="showLevel()" style="flex:1;padding:12px;" id="lv-home-btn">My level</button>
       <button class="btn-more" onclick="showMistakes()" style="flex:1;padding:12px;" id="mk-home-btn">My mistakes</button>
     </div>
+    <button class="btn-more" onclick="openCheat()" style="width:100%;padding:12px;margin-top:10px;margin-bottom:28px;" id="cs-home-btn">Cheat sheet</button>
     <div class="bd-hdr">Or practise one topic</div>
     <div id="cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;"></div>
   </div>
@@ -182,7 +201,116 @@
       <button class="btn-miss" id="bmis" onclick="mark(false)">Try again ↺</button>
       <button class="btn-why" id="bwhy" onclick="askWhy()">Why? Ask Claude</button>
       <button class="btn-skip" onclick="skip()">Skip</button>
+      <button class="btn-skip" onclick="openCheat()">Cheat sheet</button>
       <button class="btn-skip" onclick="goHome()">← Categories</button>
+    </div>
+  </div>
+
+  <div class="cs-overlay" id="cheat" role="dialog" aria-modal="true" aria-labelledby="cs-title">
+    <div class="cs-inner">
+      <div class="cs-head">
+        <div>
+          <h1 id="cs-title">Cheat sheet</h1>
+          <div class="subtitle" style="margin-bottom:0;">The rules you keep looking up</div>
+        </div>
+        <button class="cs-close" onclick="closeCheat()">Close ✕</button>
+      </div>
+      <div class="cs-jump">
+        <a href="#cs-cases">der / den / dem</a>
+        <a href="#cs-werden">wurde / worden / geworden</a>
+        <a href="#cs-pron">mich / mir</a>
+      </div>
+
+      <div class="cs-sec" id="cs-cases">
+        <div class="bd-hdr">The (der / die / das)</div>
+        <table class="cs-table">
+          <tr><th></th><th>der</th><th>die</th><th>das</th><th>plural</th></tr>
+          <tr><td>Nominative</td><td>der</td><td>die</td><td>das</td><td>die</td></tr>
+          <tr><td>Accusative</td><td class="chg">den</td><td>die</td><td>das</td><td>die</td></tr>
+          <tr><td>Dative</td><td class="chg">dem</td><td class="chg">der</td><td class="chg">dem</td><td class="chg">den…n</td></tr>
+        </table>
+        <p class="cs-p" style="margin-top:10px;">Gold = it changes. Only <strong>der</strong> words change in the accusative. Everything changes in the dative.</p>
+      </div>
+
+      <div class="cs-sec">
+        <div class="bd-hdr">Don't mix these up</div>
+        <div class="cs-tip"><strong>den</strong> has two jobs: masculine accusative (<em>den</em> Tisch) or plural dative (mit <em>den</em> Freunde<em>n</em>). With one <strong>der</strong> noun, <strong>den</strong> = accusative.</div>
+        <div class="cs-tip"><strong>Plural dative</strong> = more than one, after mit / bei / zu / von… It's always <em>den</em> + noun + <em>n</em>, whatever the gender: mit <em>den</em> Gäste<em>n</em>, mit <em>den</em> Kinder<em>n</em>. No extra n if the plural already ends in -n or -s (mit <em>den</em> Leuten, mit <em>den</em> Autos).</div>
+        <div class="cs-tip"><strong>der</strong> has two jobs too: masculine nominative (<em>der</em> Mann) or feminine dative (mit <em>der</em> Frau, in <em>der</em> Küche).</div>
+        <div class="cs-tip">Masculine and neuter look the same in the dative: <em>dem</em> Mann, <em>dem</em> Kind.</div>
+      </div>
+
+      <div class="cs-sec">
+        <div class="bd-hdr">A / an (ein) and no (kein)</div>
+        <table class="cs-table">
+          <tr><th></th><th>der</th><th>die</th><th>das</th><th>plural</th></tr>
+          <tr><td>Nominative</td><td>ein</td><td>eine</td><td>ein</td><td>keine</td></tr>
+          <tr><td>Accusative</td><td class="chg">einen</td><td>eine</td><td>ein</td><td>keine</td></tr>
+          <tr><td>Dative</td><td class="chg">einem</td><td class="chg">einer</td><td class="chg">einem</td><td class="chg">keinen…n</td></tr>
+        </table>
+        <p class="cs-p" style="margin-top:10px;">Same endings as der/den/dem: <strong>-en</strong>, <strong>-em</strong>, <strong>-er</strong>. Mein, dein, sein, kein… work the same way.</p>
+      </div>
+
+      <div class="cs-sec">
+        <div class="bd-hdr">Which case when?</div>
+        <p class="cs-p"><strong>Nominative</strong> — the subject, whoever is doing it.</p>
+        <div class="cs-ex"><em>Der</em> Hund bellt. · <em>Die</em> Frau hat angerufen.</div>
+        <p class="cs-p"><strong>Accusative</strong> — the thing the action happens to (direct object), and after <em>durch, für, gegen, ohne, um</em>.</p>
+        <div class="cs-ex">Ich brauche <em>den</em> Schlüssel. · Das ist für <em>den</em> Chef.</div>
+        <p class="cs-p"><strong>Dative</strong> — the person something is given or done to, and after <em>aus, bei, mit, nach, seit, von, zu</em>.</p>
+        <div class="cs-ex">Ich gebe <em>dem</em> Mann das Bier. · Ich fahre mit <em>dem</em> Zug. · Ich gehe zu <em>der</em> Frau.</div>
+        <p class="cs-p">Some verbs always take the dative: <em>helfen, danken, gefallen, gehören, glauben, folgen, passen, schmecken</em>.</p>
+        <div class="cs-ex">Sie hat <em>mir</em> geholfen. · Das gehört <em>dem</em> Wirt.</div>
+      </div>
+
+      <div class="cs-sec">
+        <div class="bd-hdr">an, auf, in, über, unter, vor, hinter, neben, zwischen</div>
+        <p class="cs-p">These switch. Ask: <strong>where is it?</strong> → dative. <strong>Where is it going?</strong> → accusative.</p>
+        <div class="cs-ex">Es liegt auf <em>dem</em> Tisch. (where — dative)<br>Leg es auf <em>den</em> Tisch. (going onto — accusative)<br>Ich bin in <em>der</em> Küche. · Ich gehe in <em>die</em> Küche.</div>
+        <p class="cs-p">But with a fixed verb + preposition, learn the case with the verb — often accusative: <em>warten auf, sprechen über, denken an</em> (Ich warte auf <em>den</em> Bus).</p>
+      </div>
+
+      <div class="cs-sec">
+        <div class="bd-hdr">Shortcuts you'll see</div>
+        <table class="cs-table">
+          <tr><td>zum</td><td>zu dem</td><td>im</td><td>in dem</td></tr>
+          <tr><td>zur</td><td>zu der</td><td>am</td><td>an dem</td></tr>
+          <tr><td>beim</td><td>bei dem</td><td>ins</td><td>in das</td></tr>
+          <tr><td>vom</td><td>von dem</td><td>ans</td><td>an das</td></tr>
+        </table>
+      </div>
+
+      <div class="cs-sec" id="cs-werden">
+        <div class="bd-hdr">wird · wurde · worden · geworden</div>
+        <p class="cs-p">Look at the word next to it. A <strong>done-word</strong> (gemacht, gesperrt, geliefert) → something is done to it. An <strong>adjective or noun</strong> (müde, kalt, Vater) → it becomes that.</p>
+        <table class="cs-table">
+          <tr><th></th><th>is (now)</th><th>was</th><th>has been</th></tr>
+          <tr><td>done to it</td><td>wird gemacht</td><td>wurde gemacht</td><td>ist gemacht <span class="chg">worden</span></td></tr>
+          <tr><td>becomes</td><td>wird kalt</td><td>wurde kalt</td><td>ist kalt <span class="chg">geworden</span></td></tr>
+        </table>
+        <div class="cs-tip" style="margin-top:12px;"><strong>worden</strong> only ever comes after a done-word: gesperrt <em>worden</em>, geliefert <em>worden</em>. Never "gesperrt geworden".</div>
+        <div class="cs-tip"><strong>geworden</strong> only comes after an adjective or noun: müde <em>geworden</em>, Vater <em>geworden</em>.</div>
+        <div class="cs-ex">Meine Karte <em>wurde</em> gesperrt. = Meine Karte <em>ist</em> gesperrt <em>worden</em>. (both: my card got blocked)<br>Es <em>wurde</em> spät. = Es <em>ist</em> spät <em>geworden</em>. (both: it got late)</div>
+        <p class="cs-p"><strong>wird + plain verb</strong> = will: Es <em>wird</em> regnen. · Ich <em>werde</em> dich anrufen.</p>
+        <p class="cs-p"><strong>würde</strong> = would: Das <em>würde</em> Sinn machen.</p>
+      </div>
+
+      <div class="cs-sec" id="cs-pron">
+        <div class="bd-hdr">me, you, him… (mich / mir)</div>
+        <table class="cs-table">
+          <tr><th></th><th>Nom.</th><th>Acc.</th><th>Dat.</th></tr>
+          <tr><td>I / me</td><td>ich</td><td>mich</td><td>mir</td></tr>
+          <tr><td>you</td><td>du</td><td>dich</td><td>dir</td></tr>
+          <tr><td>he / him</td><td>er</td><td>ihn</td><td>ihm</td></tr>
+          <tr><td>she / her</td><td>sie</td><td>sie</td><td>ihr</td></tr>
+          <tr><td>it</td><td>es</td><td>es</td><td>ihm</td></tr>
+          <tr><td>we / us</td><td>wir</td><td>uns</td><td>uns</td></tr>
+          <tr><td>you guys</td><td>ihr</td><td>euch</td><td>euch</td></tr>
+          <tr><td>they / you (formal)</td><td>sie / Sie</td><td>sie / Sie</td><td>ihnen / Ihnen</td></tr>
+        </table>
+      </div>
+
+      <button class="btn-again" onclick="closeCheat()" style="width:100%;padding:14px;">Back</button>
     </div>
   </div>
 
@@ -247,6 +375,34 @@ const ALL = [
   {cat:"war/wurde/würde",lvl:"A2",en:"That would make sense.",de:"Das würde Sinn machen.",note:"<strong>Würde</strong> for any 'would' — conditional."},
   {cat:"war/wurde/würde",lvl:"B1",en:"She got rejected.",de:"Sie wurde abgewiesen.",note:"<strong>Abgewiesen</strong> = rejected/turned away. Passive with wurde."},
   {cat:"war/wurde/würde",lvl:"A2",en:"The quote was expensive.",de:"Das Angebot war teuer.",note:"<strong>War</strong> = was (simple fact, not passive, not conditional)."},
+
+  // ── wurde / worden / geworden ─────────────────────────────────
+  // done-word (gemacht, gesperrt…) → wurde … / ist … worden
+  // adjective or noun (müde, Vater…) → wurde … / ist … geworden
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"My card got blocked.",de:"Meine Karte wurde gesperrt.",note:"<strong>Wurde + done-word</strong> = was done (passive, simple past). Gesperrt = blocked."},
+  {cat:"wurde / worden / geworden",lvl:"B2",en:"My card has been blocked.",de:"Meine Karte ist gesperrt worden.",note:"<strong>Ist … worden</strong> = has been done. With a done-word it's always <strong>worden</strong> — never geworden."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"That's why I got blocked.",de:"Deshalb wurde ich gesperrt.",note:"<strong>Deshalb</strong> takes the first spot, so the verb (wurde) comes next, then ich."},
+  {cat:"wurde / worden / geworden",lvl:"B2",en:"That's why I've been blocked.",de:"Deshalb bin ich gesperrt worden.",note:"Same as wurde gesperrt, in the perfect: <strong>bin … gesperrt worden</strong>. Not 'gesperrt geworden'."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"The beer was delivered this morning.",de:"Das Bier wurde heute Morgen geliefert.",note:"<strong>Wurde … geliefert</strong> = was delivered. The done-word goes to the end."},
+  {cat:"wurde / worden / geworden",lvl:"B2",en:"The beer has been delivered.",de:"Das Bier ist geliefert worden.",note:"<strong>Ist geliefert worden</strong> = has been delivered. Done-word + <strong>worden</strong> at the very end."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"My bike got stolen.",de:"Mein Fahrrad wurde geklaut.",note:"<strong>Wurde geklaut</strong> = got stolen. Geklaut is casual; gestohlen is the neutral word."},
+  {cat:"wurde / worden / geworden",lvl:"B2",en:"My bike has been stolen.",de:"Mein Fahrrad ist geklaut worden.",note:"<strong>Ist … worden</strong> = has been done. Germans use this a lot when telling a story."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"He got fired.",de:"Er wurde gefeuert.",note:"<strong>Wurde gefeuert</strong> = got fired (passive). English 'got' + done-word is usually <strong>wurde</strong> in German."},
+  {cat:"wurde / worden / geworden",lvl:"B2",en:"He's been fired.",de:"Er ist gefeuert worden.",note:"<strong>Ist gefeuert worden</strong> — done-word + worden."},
+  {cat:"wurde / worden / geworden",lvl:"B2",en:"I've been invited to a party.",de:"Ich bin zu einer Party eingeladen worden.",note:"<strong>Bin … eingeladen worden</strong> = have been invited. Zu einer Party = dative after zu."},
+  {cat:"wurde / worden / geworden",lvl:"B2",en:"The bill hasn't been paid yet.",de:"Die Rechnung ist noch nicht bezahlt worden.",note:"<strong>Noch nicht</strong> = not yet. <strong>Ist … bezahlt worden</strong> = has been paid."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"It got really loud.",de:"Es wurde richtig laut.",note:"<strong>Wurde + adjective</strong> = got / became. No done-word, so it's not passive."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"It's got late.",de:"Es ist spät geworden.",note:"<strong>Ist … geworden</strong> = has become. Adjective (spät) → <strong>geworden</strong>."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"He's become a dad.",de:"Er ist Vater geworden.",note:"Noun (Vater) → <strong>geworden</strong>. Becoming something, not having something done to you."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Ich bin gesperrt ___. (I've been blocked.)",de:"worden",mc:["worden","geworden","wurde"],note:"<strong>Gesperrt</strong> is a done-word → <strong>worden</strong>. Geworden only follows an adjective or noun."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Ich bin müde ___. (I've got tired.)",de:"geworden",mc:["worden","geworden","wurde"],note:"<strong>Müde</strong> is an adjective → <strong>geworden</strong> (became)."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Das Fass ___ gestern gewechselt. (The keg was changed yesterday.)",de:"wurde",mc:["wurde","worden","geworden"],note:"No ist/bin in the sentence, so it's the simple past: <strong>wurde</strong> + done-word."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Es ist schon dunkel ___. (It's already got dark.)",de:"geworden",mc:["worden","geworden","wurde"],note:"<strong>Dunkel</strong> is an adjective → <strong>geworden</strong>."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Die Gläser sind schon gespült ___. (The glasses have already been washed.)",de:"worden",mc:["worden","geworden","wurde"],note:"<strong>Gespült</strong> is a done-word → <strong>worden</strong>."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Er ___ gestern eingeladen. (He was invited yesterday.)",de:"wurde",mc:["wurde","worden","geworden"],note:"No ist in the sentence → simple past <strong>wurde</strong>. With ist it would be: Er ist eingeladen <strong>worden</strong>."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Sie ist Chefin ___. (She's become the boss.)",de:"geworden",mc:["worden","geworden","wurde"],note:"<strong>Chefin</strong> is a noun → <strong>geworden</strong>."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Der Tisch ist reserviert ___. (The table has been reserved.)",de:"worden",mc:["worden","geworden","wurde"],note:"<strong>Reserviert</strong> is a done-word → <strong>worden</strong>."},
+  {cat:"wurde / worden / geworden",lvl:"B1",en:"Es ___ immer voller. (It got fuller and fuller.)",de:"wurde",mc:["wurde","worden","geworden"],note:"<strong>Wurde + adjective</strong> = got / became (simple past). Immer voller = fuller and fuller."},
 
   // ── WORD ORDER — SUBORDINATE CLAUSES ────────────────────────
   {cat:"Word Order",lvl:"B1",en:"I still don't know where my headphones are.",de:"Ich weiß immer noch nicht, wo meine Kopfhörer sind.",note:"After <strong>wo</strong>, verb goes to end: wo meine Kopfhörer <strong>sind</strong>."},
@@ -631,6 +787,8 @@ const ALL = [
   {cat:"Pub German",lvl:"A2",en:"Don't talk to my staff like that.",de:"Rede nicht so mit meinem Personal.",note:"<strong>Meinem Personal</strong> — das Personal is neuter, so dative is meinem. Rede nicht so = don't talk like that."},
   {cat:"Pub German",lvl:"B1",en:"You're making her uncomfortable.",de:"Sie fühlt sich wegen euch unwohl.",note:"<strong>Sich unwohl fühlen</strong> = to feel uncomfortable — unwohl goes with fühlen, not machen. <strong>Wegen euch</strong> = because of you guys."},
   {cat:"Pub German",lvl:"A2",en:"She's only trying to do her job.",de:"Sie will nur ihre Arbeit machen.",note:"<strong>Will</strong> = wants/is trying to (modal). Nur = only. Ihre Arbeit = her job (feminine accusative)."},
+  {cat:"Pub German",lvl:"B1",en:"If you guys want to come again, please make a reservation next time.",de:"Wenn ihr nochmal kommen wollt, reserviert bitte nächstes Mal.",note:"<strong>Wenn</strong> sends the verb to the end (…kommen <strong>wollt</strong>), then the main part starts with the verb (<strong>reserviert</strong> bitte…). Formal: Wenn Sie wiederkommen möchten, reservieren Sie bitte beim nächsten Mal."},
+  {cat:"Pub German",lvl:"B1",en:"Do you guys want a better table if one comes available?",de:"Wollt ihr einen besseren Tisch, falls einer frei wird?",note:"<strong>Einen besseren Tisch</strong> — der Tisch is the thing you want (accusative), so ein→einen and the adjective gets -en. <strong>Frei werden</strong> = to come free. <strong>Falls</strong> sends wird to the end."},
   {cat:"Hamburg Life",lvl:"B1",en:"I didn't plan on staying.",de:"Ich hatte nicht vor zu bleiben.",note:"<strong>Vorhaben</strong> = to plan/intend (separable). Hatte vor = had planned (past). Zu + infinitive after vorhaben."},
   {cat:"Hamburg Life",lvl:"B1",en:"But then opportunities came up and I stayed.",de:"Aber dann kamen Möglichkeiten auf und ich bin geblieben.",note:"<strong>Aufkommen</strong> = to come up/arise. Kamen auf = arose (past). Bin geblieben = stayed (perfect)."},
   {cat:"Hamburg Life",lvl:"B1",en:"In the meantime I'm full time.",de:"Mittlerweile bin ich Vollzeit.",note:"<strong>Mittlerweile</strong> = in the meantime / by now. Vollzeit = full time. Great word for showing how things evolved."},
@@ -897,6 +1055,28 @@ function checkAnswer() {
     lastCorrect=false;
   }
 }
+
+// ---- Cheat sheet ----------------------------------------------------------
+// A full-screen panel over whatever you're doing, so a quiz card keeps its place.
+function openCheat() {
+  const el = document.getElementById('cheat');
+  el.className = 'cs-overlay show';
+  el.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function closeCheat() {
+  document.getElementById('cheat').className = 'cs-overlay';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('cheat').classList.contains('show')) closeCheat();
+});
+document.addEventListener('click', e => {
+  const a = e.target.closest('.cs-jump a');
+  if (!a) return;
+  e.preventDefault(); // scroll inside the panel without touching the page URL
+  document.querySelector(a.getAttribute('href')).scrollIntoView({behavior: 'smooth', block: 'start'});
+});
 
 // ---- Level tracking ------------------------------------------------------
 // Every first check of a question is logged (right or wrong, by the automatic
